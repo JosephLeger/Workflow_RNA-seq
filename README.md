@@ -37,11 +37,13 @@ A quality control is carried out on the FASTQ files resulting from trimming to e
 
 ### Scripts
 All required scripts are available in the script folder in this directory. The workflow is coded in Shell language and is supposed to be launched under a Linux environment.  
+Moreover, 
 To get more information about using these scripts, enter the command `sh <script.sh> help`.  
 
 ### Environments  
 This custom pipeline was written to be used on a computing cluster with tools already pre-installed in the form of modules. Modules are so loaded using `module load <tool_name>` command.   
-If you are running the pipeline in another context, you will need to remove these lines from the scripts and load manually required tools.
+If you are running the pipeline in another context, you will need to remove these lines from the scripts and load manually required tools.  
+
 
 ### Requirments
 ```
@@ -75,7 +77,7 @@ Then, use provided scritps in refindex folder of this repository according to th
 ### Transcriptome indexing
 ```sh RSEM_refindex.sh ./Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ./Mus_musculus.GRCm39.109.gtf.gz mm39.109```
 
-
+## 2. Quality Check 
 
 
 
