@@ -70,10 +70,10 @@ wget https://ftp.ensembl.org/pub/release-109/gtf/mus_musculus/Mus_musculus.GRCm3
 Then, use provided scritps in refindex folder of this repository according to the workflow you aim to perform.  
 
 ### Genome indexing
-```bash sh STAR_refindex.sh ../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ../Genome/Mus_musculus.GRCm39.109.gtf.gz```
+```bash sh STAR_refindex.sh ./Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ./Mus_musculus.GRCm39.109.gtf.gz```
 
 ### Transcriptome indexing
-```bash sh RSEM_refindex.sh ../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ../Genome/Mus_musculus.GRCm39.109.gtf.gz mm39.109```
+```bash sh RSEM_refindex.sh ./Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ./Mus_musculus.GRCm39.109.gtf.gz mm39.109```
 
 
 
