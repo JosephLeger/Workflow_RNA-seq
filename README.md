@@ -1,6 +1,3 @@
-<style>body {text-align: justify}
-<\style>
-
 # Bulk_RNA-seq
 Custom pipeline for Bulk RNA-seq analysis
 
