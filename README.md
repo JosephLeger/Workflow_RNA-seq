@@ -7,7 +7,7 @@ Custom pipeline for Bulk RNA-seq analysis
 Two quantification methods are available in this workflow :  
 * **Raw Counts :** This method generates a count table with integer values corresponding to exact aligned read numbers for each gene. Reads are first mapped using **STAR**, then quantified using **featureCount**.
 * **Estimation :** This method generates a table with floating point numbers corresponding to transcript expression estimation, obtained by normalizing the mapped reads according to transcripts sizes. Expression estimation is then carried out by **RSEM**.
-
+  
 <img src="https://github.com/JosephLeger/Bulk_RNA-seq/blob/main/img/pipeline.png"  width="90%" height="90%">
 
 
@@ -27,7 +27,7 @@ A quality control is carried out on the FASTQ files resulting from trimming to e
 
 6. **Quantification :** This step will transform the BAM files containing the aligned reads into a count table usable for further analyzes in R or Python.
 
-### Workflow Estimation
+### Estimation Workflow 
 4. **Transcripts estimation :** This step consists of aligning the FASTQ files to the reference transcriptome previously indexed with **RSEM** to make an estimate of the abundance of each transcript. For each FASTQ file, several files result, in particular a BAM file and a .stat folder which will make it possible to control the quality of the alignment. There are also .genes.results and .isoforms.results files containing respectively the results of the estimation of expression by genes or by transcripts which will be used for further analyzes in R or Python.
 
 5. **Alignment Quality Check :** In order to analyze the proportion of correctly aligned reads, the **MultiQC** tool can be directly used to pool the quality control of the BAM files resulting from the alignment.
@@ -58,8 +58,26 @@ To start the workflow, create a new directory for the project and put previously
 Raw FASTQ files must be compressed in '.fq.gz' or '.fastq.gz' format. If it is not the case, you need to compress them using `gzip Raw/*.fastq`.  
 
 # Workflow Step by Step
+# Common Steps
+## 1. Preparing the reference
+This step only needs to be carried out during the first alignment. The genome or transcriptome once indexed can be reused as a reference for subsequent alignments.  
+First, you need to download reference genome FASTA file and annotaion GTF file.  
+```bash
+# Example with mouse genome from Ensembl.org
+wget https://ftp.ensembl.org/pub/release-109/fasta/mus_musculus/dna/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz
+wget https://ftp.ensembl.org/pub/release-109/gtf/mus_musculus/Mus_musculus.GRCm39.109.gtf.gz
+```
+Then, use provided scritps in refindex folder of this repository according to the workflow you aim to perform.  
 
+### Genome indexing
+```bash
+sh STAR_refindex.sh ../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ../Genome/Mus_musculus.GRCm39.109.gtf.gz
+```
 
+### Transcriptome indexing
+```bash
+sh RSEM_refindex.sh ../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ../Genome/Mus_musculus.GRCm39.109.gtf.gz mm39.109
+```
 
 
 
