@@ -1,3 +1,5 @@
+<style>body {text-align: justify}</style>
+
 # Bulk_RNA-seq
 Custom pipeline for Bulk RNA-seq analysis
 
@@ -17,8 +19,8 @@ Two quantification methods are available in this workflow :
 
 2. **Quality Check :** Quality of each FASTQ file is performed using **FastQC**. A quality control report per file is then obtained, providing information on the quality of the bases, the length of the reads, the presence of adapters, etc. To make it easier to visualize the results, all reports are then pooled and analyzed simultaneously using **MultiQC**. 
 
-3. **Trimming :** <div style="text-align: justify">According to the conclusions drawn from the quality control of the reads, a trimming step is often necessary. This step makes it possible to clean the reads, for example by eliminating sequences enriched in adapters, or by trimming poor quality bases at the ends of the reads. For this, the **Trimmomatic** tool needs to be provided with the adapter sequences used for sequencing if an enrichment has been detected.
-A quality control is carried out on the FASTQ files resulting from trimming to ensure that the quality obtained is satisfactory.<\div>
+3. **Trimming :** According to the conclusions drawn from the quality control of the reads, a trimming step is often necessary. This step makes it possible to clean the reads, for example by eliminating sequences enriched in adapters, or by trimming poor quality bases at the ends of the reads. For this, the **Trimmomatic** tool needs to be provided with the adapter sequences used for sequencing if an enrichment has been detected.
+A quality control is carried out on the FASTQ files resulting from trimming to ensure that the quality obtained is satisfactory.
 
 ### Raw Counts Workflow 
 4. **Alignment to the genome :** This step consists of aligning the FASTQ files to the previously indexed reference genome in order to identify the regions from which the reads come. The **STAR** tool thus generates BAM files containing the reads aligned to the genome.
