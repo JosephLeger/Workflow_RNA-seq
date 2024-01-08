@@ -17,8 +17,8 @@ Two quantification methods are available in this workflow :
 
 2. **Quality Check :** Quality of each FASTQ file is performed using **FastQC**. A quality control report per file is then obtained, providing information on the quality of the bases, the length of the reads, the presence of adapters, etc. To make it easier to visualize the results, all reports are then pooled and analyzed simultaneously using **MultiQC**. 
 
-3. **Trimming :** According to the conclusions drawn from the quality control of the reads, a trimming step is often necessary. This step makes it possible to clean the reads, for example by eliminating sequences enriched in adapters, or by trimming poor quality bases at the ends of the reads. For this, the **Trimmomatic** tool needs to be provided with the adapter sequences used for sequencing if an enrichment has been detected.
-A quality control is carried out on the FASTQ files resulting from trimming to ensure that the quality obtained is satisfactory.
+3. **Trimming :** <div style="text-align: justify">According to the conclusions drawn from the quality control of the reads, a trimming step is often necessary. This step makes it possible to clean the reads, for example by eliminating sequences enriched in adapters, or by trimming poor quality bases at the ends of the reads. For this, the **Trimmomatic** tool needs to be provided with the adapter sequences used for sequencing if an enrichment has been detected.
+A quality control is carried out on the FASTQ files resulting from trimming to ensure that the quality obtained is satisfactory.<\div>
 
 ### Raw Counts Workflow 
 4. **Alignment to the genome :** This step consists of aligning the FASTQ files to the previously indexed reference genome in order to identify the regions from which the reads come. The **STAR** tool thus generates BAM files containing the reads aligned to the genome.
@@ -42,9 +42,18 @@ To get more information about using these scripts, enter the command `sh <script
 ### Environments  
 This custom pipeline was written to be used on a computing cluster with tools already pre-installed in the form of modules. Modules are so loaded using `module load <tool_name>` command.  
 If you are running the pipeline in another context, you will need to remove these lines from the scripts and load manually required tools.
+
+### Requirments
+```
+Name                        Version
+fastqc                      0.11.9
+multiqc                     1.13
+trimmomatic                 0.39
+rsem                        1.3.2
+star                        2.7.5a
 ```
 
-```
+### 
 
 
 
