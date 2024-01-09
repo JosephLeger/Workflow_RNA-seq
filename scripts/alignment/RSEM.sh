@@ -75,6 +75,9 @@ fi
 module load rsem/1.3.2
 module load star/2.7.5a
 
+# Initialize SampleSheet
+echo "FileName,SampleName,CellType,Batch" > Counts/Sample_Sheet.csv
+
 if [ $1 == "SE" ]; then
     # Create RSEM directory for outputs
     mkdir -p ./RSEM
