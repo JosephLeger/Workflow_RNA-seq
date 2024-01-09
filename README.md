@@ -107,7 +107,7 @@ Provided trimming script allow several options :
 *For more details, please read [Trimmomatic Manual](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf).*
  
 ```bash
-sh Trim.sh -S 4:15 -L 3 -T 3 -M 36 -I ./Ref/NexteraPE-PE.fa:2:30:10 PE Raw
+sh Trim.sh -S 4:15 -L 5 -T 3 -M 36 -I ./Ref/NexteraPE-PE.fa:2:30:10 PE Raw
 ```
 
 # STAR Raw Counts
