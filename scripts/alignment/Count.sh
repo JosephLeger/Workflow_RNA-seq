@@ -3,6 +3,10 @@
 ################################################################################################################
 ### HELP -------------------------------------------------------------------------------------------------------
 ################################################################################################################
+script_name='Count.sh'
+
+# Get user id for custom manual pathways
+usr=`id | sed -e 's@).*@@g' | sed -e 's@.*(@@g'`
 
 # Text font variabes
 END='\033[0m'
@@ -34,9 +38,6 @@ ${BOLD}EXAMPLE USAGE${END}\n\
 ### ERRORS -----------------------------------------------------------------------------------------------------
 ################################################################################################################
 
-# Get user id for custom manual pathways
-usr=`id | sed -e 's@).*@@g' | sed -e 's@.*(@@g'`
-
 # Count .fastq.gz or .fq.gz files in provided directory
 files=$(shopt -s nullglob dotglob; echo $2/*.bam)
 
@@ -45,8 +46,8 @@ if [ $# -eq 1 ] && [ $1 == "help" ]; then
     exit
 elif [ $# -ne 3 ]; then
     # Error if inoccrect number of agruments is provided
-    echo 'Error synthax : please use following synthax'
-    echo '      sh Count.sh <SE|PE> <input_dir> <gtf_file>'
+    echo "Error synthax : please use following synthax"
+    echo "      sh ${script_name} <SE|PE> <input_dir> <gtf_file>"
     exit
 elif (( !${#files} )); then
     # Error if provided directory is empty or does not exists
@@ -58,8 +59,8 @@ else
         PE|SE) 
             ;;
         *) 
-            echo 'Error Synthax : please use following synthax'
-            echo '      sh Count.sh <SE|PE> <input_dir> <gtf_file>' 
+            echo "Error Synthax : please use following synthax"
+            echo "      sh ${script_name} <SE|PE> <input_dir> <gtf_file>" 
             exit;;
     esac
 fi
