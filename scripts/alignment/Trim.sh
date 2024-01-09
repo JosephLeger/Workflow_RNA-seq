@@ -138,9 +138,6 @@ shift $((OPTIND-1))
 ### ERRORS -----------------------------------------------------------------------------------------------------
 ################################################################################################################
 
-# Get user id for custom manual pathways
-usr=`id | sed -e 's@).*@@g' | sed -e 's@.*(@@g'`
-
 # Count .fastq.gz or .fq.gz files in provided directory
 files=$(shopt -s nullglob dotglob; echo $2/*.fastq.gz $2/*.fq.gz)
 # Check format of I_arg if provided
