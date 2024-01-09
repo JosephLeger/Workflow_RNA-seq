@@ -3,11 +3,12 @@
 ################################################################################################################
 ### HELP -------------------------------------------------------------------------------------------------------
 ################################################################################################################
+script_name='MultiQC.sh'
 
 # Get user id for custom manual pathways
 usr=`id | sed -e 's@).*@@g' | sed -e 's@.*(@@g'`
 
-# Text font variabes
+# Text font variables
 END='\033[0m'
 BOLD='\033[1m'
 UDL='\033[4m'
@@ -17,21 +18,21 @@ Help()
 {
 echo -e "${BOLD}####### MULTIQC MANUAL #######${END}\n\n\
 ${BOLD}SYNTHAX${END}\n\
-        sh 2_MultiQC.sh <input_dir>\n\n\
+        sh ${script_name} <input_dir>\n\n\
 
 ${BOLD}DESCRIPTION${END}\n\
-        Generate a grouped visualization of several quality check results.\n\
+        Generate a grouped visualization of several quality check results from FastQC.\n\
         It creates a new folder './QC/MultiQC' in which input results files are merged into a single file.\n\
         Output files are a unique .html file for direct visualization and a corresponding .zip file containing results.\n\n\
 
 ${BOLD}ARGUMENTS${END}\n\
         ${BOLD}<input_dir>${END}\n\
                 Directory containing correct input files.
-                Correct outputs can be ${BOLD}.zip${END} results files from FastQC quality check, STAR outputs ${BOLD}Log.final.out${END} files, or RSEM result folder containing subfolders with ${BOLD}.cnt${END} files.\n\
+                Correct inputs can be ${BOLD}.zip${END} results files from FastQC quality check, STAR outputs ${BOLD}Log.final.out${END} files, or RSEM result folder containing subfolders with ${BOLD}.cnt${END} files.\n\
                 Note that MultiQC looks for files in all subdirectories of provided input directory.\n\n\
 
 ${BOLD}EXAMPLE USAGE${END}\n\
-        sh 2_MultiQC.sh ${BOLD}QC/Raw${END}\n"
+        sh ${script_name} ${BOLD}QC/Raw${END}\n"
 }
 
 ################################################################################################################
@@ -43,8 +44,8 @@ if [ $# -eq 1 ] && [ $1 == "help" ]; then
         exit
 elif [ $# -ne 1 ]; then
         # Error if inoccrect number of agruments is provided
-        echo 'Error synthax : please use following synthax'
-        echo '          sh MultiQC.sh <input_dir>'
+        echo "Error synthax : please use following synthax" 
+        echo "          sh ${script_name} <input_dir>"
         exit
 fi
 
