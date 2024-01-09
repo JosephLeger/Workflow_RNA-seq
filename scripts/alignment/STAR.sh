@@ -3,6 +3,10 @@
 ################################################################################################################
 ### HELP -------------------------------------------------------------------------------------------------------
 ################################################################################################################
+script_name='STAR.sh'
+
+# Get user id for custom manual pathways
+usr=`id | sed -e 's@).*@@g' | sed -e 's@.*(@@g'`
 
 # Text font variabes
 END='\033[0m'
@@ -30,15 +34,12 @@ ${BOLD}ARGUMENTS${END}\n\
         Provided path must be ended by generated GenomDir folder.\n\n\
 
 ${BOLD}EXAMPLE USAGE${END}\n\
-    sh STAR.sh ${BOLD}PE Trimmed /LAB-DATA/BiRD/users/${usr}/Ref/refdata-STAR-mm39.108/GenomeDir${END}\n"
+    sh STAR.sh ${BOLD}PE Trimmed/Trimmomatic /LAB-DATA/BiRD/users/${usr}/Ref/refdata-STAR-mm39.108/GenomeDir${END}\n"
 }
 
 ################################################################################################################
 ### ERRORS -----------------------------------------------------------------------------------------------------
 ################################################################################################################
-
-# Get user id for custom manual pathways
-usr=`id | sed -e 's@).*@@g' | sed -e 's@.*(@@g'`
 
 # Count .fastq.gz pr .fq.gz files in provided directory
 files=$(shopt -s nullglob dotglob; echo $2/*.fastq.gz $2/*.fq.gz)
@@ -48,8 +49,8 @@ if [ $# -eq 1 ] && [ $1 == "help" ]; then
         exit
 elif [ $# -ne 3 ]; then
         # Error if inoccrect number of agruments is provided
-        echo 'Error synthax : please use following synthax'
-        echo '          sh STAR.sh <SE|PE> <input_dir> <refindex>'
+        echo "Error synthax : please use following synthax"
+        echo "          sh ${script_name} <SE|PE> <input_dir> <refindex>"
         exit
 elif (( !${#files} )); then
         # Error if provided directory is empty or does not exists
@@ -58,11 +59,11 @@ elif (( !${#files} )); then
 else
         # Error if the correct number of arguments is provided but the first does not match 'SE' or 'PE'
         case $1 in
-                PE|SE|pe|se) 
+                PE|SE) 
                         ;;
                 *) 
-                        echo 'Error synthax : please use following synthax'
-                        echo '          sh STAR.sh <SE|PE> <input_dir> <refindex>'
+                        echo "Error synthax : please use following synthax"
+                        echo "          sh ${script_name} <SE|PE> <input_dir> <refindex>"
                 exit;;
         esac
 fi
