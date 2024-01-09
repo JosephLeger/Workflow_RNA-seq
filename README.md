@@ -36,14 +36,13 @@ A quality control is carried out on the FASTQ files resulting from trimming to e
 # Initialization and recommendations
 
 ### Scripts
-All required scripts are available in the script folder in this directory. The workflow is coded in Shell language and is supposed to be launched under a Linux environment.  
-Moreover, 
+All required scripts are available in the script folder in this directory.   
 To get more information about using these scripts, enter the command `sh <script.sh> help`.  
 
 ### Environments  
-This custom pipeline was written to be used on a computing cluster with tools already pre-installed in the form of modules. Modules are so loaded using `module load <tool_name>` command.   
-If you are running the pipeline in another context, you will need to remove these lines from the scripts and load manually required tools.  
-
+The workflow is encoded in Shell language and is supposed to be launched under a Linux environment.  
+Moreover, it was written to be used on a computing cluster with tools already pre-installed in the form of modules. Modules are so loaded using `module load <tool_name>` command.  
+All script files launch tasks as **qsub** task submission. To successfully complete the workflow, wait for all the jobs in a step to be completed before launching the next one.  
 
 ### Requirments
 ```
@@ -85,11 +84,10 @@ sh RSEM_refindex.sh ./Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ./Mus_mu
 
 ## 2. Quality Check
 Syntax : ```sh QC.sh <input_dir>```  
-To launch quality check using **FastQC** on raw gzipped FASTQ files located in 'Raw' folder, launch :  
 ```bash
 sh QC.sh Raw
 ```
-It generates one quality report per file. Once all reports are created, pool them in a single file using **MultiQC**.  
+  
 Syntax : ```sh MultiQC.sh <input_dir>```  
 ```bash
 sh MultiQC.sh QC/Raw
@@ -107,15 +105,41 @@ Provided trimming script allow several options :
 * **-I** (Illuminaclip) : Cuts adapters and other Illumina-specific sequences present in the reads.  
 *For more details, please read [Trimmomatic Manual](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf).*
  
-To do so for paired-end files, identify adapter sequences to trim in a FASTA file and launch :  
 ```bash
 sh Trim.sh -S 4:15 -L 3 -T 3 -M 36 -I ./Ref/NexteraPE-PE.fa:2:30:10 PE Raw
 ```
 
 # STAR Raw Counts
 ## 4. Alignment to genome
+Syntax : ```sh STAR.sh <SE|PE> <input_dir> <refindex>```
+```bash
+sh STAR.sh PE Trimmed/Trimmomatic/Paired ./Ref/refdata-STAR-mm39.108/GenomeDir
+```
+## 5. Alignment Quality Check
+Synthax : ```sh MultiQC.sh <inpit_dir>```
+```bash
+sh MultiQC.sh STAR
+```
+
+## 6. Quantification
+Syntax : ```sh Count.sh <SE|PE> <input_dir> <GTF>```
+```bash
+sh Count.sh PE STAR .Ref/Mus_musculus.GRCm39.108.gtf
+```
 
 
+# RSEM Estimation
+## 4. Transcripts Estimation
+Syntax : ```sh RSEM.sh <SE|PE> <input_dir> <refindex>```   
+```bash
+sh RSEM.sh PE Trimmed/Trimmomatic/Paired ./Ref/refdata-RSEM-mm39.108/mm39.108
+```
+
+## 5. Alignment Quality Check
+Synthax : ```sh MultiQC.sh <inpit_dir>```  
+```bash
+sh MultiQC.sh RSEM
+```
 
 
 
