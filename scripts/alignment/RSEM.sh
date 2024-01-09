@@ -75,12 +75,13 @@ fi
 module load rsem/1.3.2
 module load star/2.7.5a
 
+# Create RSEM directory for outputs
+mkdir -p ./RSEM
+
 # Initialize SampleSheet
-echo "FileName,SampleName,CellType,Batch" > Counts/Sample_Sheet.csv
+echo "FileName,SampleName,CellType,Batch" > ./RSEM/Sample_Sheet.csv
 
 if [ $1 == "SE" ]; then
-    # Create RSEM directory for outputs
-    mkdir -p ./RSEM
     # Precise to eliminate empty lists for the loop
     shopt -s nullglob
     # If SE (Single-End) is selected, every files are aligned separately
@@ -96,10 +97,10 @@ if [ $1 == "SE" ]; then
         $i \
         $3 \
         RSEM/${output}" | qsub -N RSEM_SE_${output}
+        # Append SampleSheet
+        echo ",${output}.genes.results,," >> ./RSEM/Sample_Sheet.csv
     done           
 elif [ $1 == "PE" ]; then
-    # Create RSEM directory for outputs
-    mkdir -p ./RSEM
     # Precise to eliminate empty lists for the loop
     shopt -s nullglob
     # If SE (Single-End) is selected, every files are aligned separately
@@ -120,6 +121,8 @@ elif [ $1 == "PE" ]; then
         $R2 \
         $3 \
         RSEM/$output" | qsub -N RSEM_PE_${output}
+        # Append SampleSheet
+        echo ",${output}.genes.results,," >> ./RSEM/Sample_Sheet.csv
     done   
 fi
 
