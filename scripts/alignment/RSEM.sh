@@ -18,9 +18,12 @@ Help()
 echo -e "${BOLD}####### RSEM MANUAL #######${END}\n\n\
 ${BOLD}SYNTHAX${END}\n\
     sh RSEM.sh <SE|PE> <input_dir> <refindex>\n\n\
+    
 ${BOLD}DESCRIPTION${END}\n\
     Perform transcriptome alignement and transcript quantification of paired or unpaired fastq files using RSEM.\n\
-    It creates a new folder './RSEM' in which aligned BAM files and outputs are stored.\n\n\
+    It creates a new folder './RSEM' in which aligned BAM files and outputs are stored.\n\
+    A pre-filled SampleSheet in CSV format is generated in parallel.\n\n\
+    
 ${BOLD}ARGUMENTS${END}\n\
     ${BOLD}<SE|PE>${END}\n\
         Define whether FASTQ files are Single-End (SE) or Paired-End (PE).\n\
