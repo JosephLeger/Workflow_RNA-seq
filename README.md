@@ -100,11 +100,11 @@ Pooled results are available in **QC/MultiQC/QC_Raw_MultiQC.html** file.
 Syntax : ```sh Trim.sh [options] <SE|PE> <input_dir>```  
 If low quality bases or adapter enrichment is detected, you will need to perform trimming step.  
 Provided trimming script allow several options :
-* S (Slingdingwindow) : Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.  
-* L (Leading) : Remove low quality bases from the beginning. As long as a base has a value below this threshold the base is removed and the next base will be investigated.  
-* T (Trailing) : Remove low quality bases from the end. As long as a base has a value below this threshold the base is removed and the next base will be investigated.     
-* M (Minlen) : This module removes reads that fall below the specified minimal length.   
-* I (Illuminaclip) : Cuts adapters and other Illumina-specific sequences present in the reads.  
+* **-S** (Slingdingwindow) : Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.  
+* **-L** (Leading) : Remove low quality bases from the beginning. As long as a base has a value below this threshold the base is removed and the next base will be investigated.  
+* **-T** (Trailing) : Remove low quality bases from the end. As long as a base has a value below this threshold the base is removed and the next base will be investigated.     
+* **-M** (Minlen) : This module removes reads that fall below the specified minimal length.   
+* **-I** (Illuminaclip) : Cuts adapters and other Illumina-specific sequences present in the reads.  
 *For more details, please read [Trimmomatic Manual](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf).*
  
 To do so for paired-end files, identify adapter sequences to trim in a FASTA file and launch :  
