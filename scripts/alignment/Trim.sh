@@ -62,7 +62,7 @@ ${BOLD}ARGUMENTS${END}\n\
         It usually corresponds to 'Raw'.\n\n\
 
 ${BOLD}EXAMPLE USAGE${END}\n\
-    sh ${script_name} ${BOLD}-U${END} Both ${BOLD}-S${END} 4:15 ${BOLD}-L${END} 5 ${BOLD}-T${END} 5 ${BOLD}-M${END} 50 ${BOLD}-I${END} adapters_seq.fa:2:30:10 ${BOLD}PE${END} ${BOLD}-D${END} True ${BOLD}Raw${END}\n"
+    sh ${script_name} ${BOLD}-U${END} Both ${BOLD}-S${END} 4:15 ${BOLD}-L${END} 5 ${BOLD}-T${END} 5 ${BOLD}-M${END} 50 ${BOLD}-I${END} adapters_seq.fa:2:30:10 ${BOLD}-D${END} True ${BOLD}PE Raw${END}\n"
 }
 
 ################################################################################################################
