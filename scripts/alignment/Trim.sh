@@ -203,6 +203,7 @@ if [ $U_arg == "Trimmomatic" ]; then
         done
     elif [ $1 == "PE" ]; then
         # Create output directories
+        outdir='Trimmed/Trimmomatic'
         mkdir -p ${outdir}/{Paired,Unpaired}
         # Precise to eliminate empty lists for the loop
         shopt -s nullglob
