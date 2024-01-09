@@ -79,7 +79,7 @@ for input in "$@"; do
         newdir=QC/${input}
         mkdir -p ${newdir}
         # Generate jobname replacing '/' by '_'
-        name=`echo ${input} | sed -e 's/\//_/g'`
+        name=`echo ${input} | sed -e 's@\/@_@g'`
         # Precise to eliminate empty lists for the loop
         shopt -s nullglob
         # Launch FastQC for each provided file
