@@ -37,7 +37,7 @@ ${BOLD}ARGUMENTS${END}\n\
         Provided path must be ended by reference name (prefix common to files).\n\n\
 
 ${BOLD}EXAMPLE USAGE${END}\n\
-    sh RSEM.sh ${BOLD}PE Trimmed/Trimmomatic /LAB-DATA/BiRD/users/${usr}/Ref/refdata-RSEM-mm39.108/mm39_108${END}\n"
+    sh RSEM.sh ${BOLD}PE Trimmed/Trimmomatic /LAB-DATA/BiRD/users/${usr}/Ref/refdata-RSEM-mm39.108/mm39.108${END}\n"
 }
 
 ################################################################################################################
