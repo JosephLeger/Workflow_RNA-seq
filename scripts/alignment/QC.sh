@@ -3,11 +3,12 @@
 ################################################################################################################
 ### HELP -------------------------------------------------------------------------------------------------------
 ################################################################################################################
+script_name='QC.sh'
 
 # Get user id for custom manual pathways
 usr=`id | sed -e 's@).*@@g' | sed -e 's@.*(@@g'`
 
-# Text font variabes
+# Text font variables
 END='\033[0m'
 BOLD='\033[1m'
 UDL='\033[4m'
@@ -17,7 +18,7 @@ Help()
 {
 echo -e "${BOLD}####### QC MANUAL #######${END}\n\n\
 ${BOLD}SYNTHAX${END}\n\
-        sh 1_QC.sh <input_dir1> <...>\n\n\
+        sh ${script_name} <input_dir1> <...>\n\n\
 
 ${BOLD}DESCRIPTION${END}\n\
         Perform quality check of FASTQ files using FastQC.\n\
@@ -29,9 +30,9 @@ ${BOLD}ARGUMENTS${END}\n\
                 Directory containing .fastq.gz or .fq.gz files to use as input for QC.\n\n\
         ${BOLD}<...>${END}\n\
                 Several directories can be specified as argument in the same command line.\n\n\
-
+                
 ${BOLD}EXAMPLE USAGE${END}\n\
-        sh 1_QC.sh ${BOLD}Raw${END}\n"
+        sh ${script_name} ${BOLD}Raw${END}\n"
 }
 
 ################################################################################################################
@@ -46,8 +47,8 @@ if [ $# -eq 1 ] && [ $1 == "help" ]; then
         exit
 elif [ $# -lt 1 ]; then
         # Error if inoccrect number of agruments is provided
-        echo 'Error synthax : please use following synthax'
-        echo '          sh 1_QC.sh <input_dir1> <...>'
+        echo "Error synthax : please use following synthax"
+        echo "          sh ${script_name} <input_dir1> <...>"
         exit
 else
         input_list=''
