@@ -3,6 +3,10 @@
 ################################################################################################################
 ### HELP -------------------------------------------------------------------------------------------------------
 ################################################################################################################
+script_name='RSEM.sh'
+
+# Get user id for custom manual pathways
+usr=`id | sed -e 's@).*@@g' | sed -e 's@.*(@@g'`
 
 # Text font variabes
 END='\033[0m'
@@ -19,18 +23,18 @@ ${BOLD}DESCRIPTION${END}\n\
     It creates a new folder './RSEM' in which aligned BAM files and outputs are stored.\n\n\
 ${BOLD}ARGUMENTS${END}\n\
     ${BOLD}<SE|PE>${END}\n\
-        Define whether fastq files are Single-End (SE) or Paired-End (PE).\n\
+        Define whether FASTQ files are Single-End (SE) or Paired-End (PE).\n\
         If SE is provided, each file is aligned individually and give rise to an output file stored in './RSEM' directory.\n\
         If PE is provided, files are aligned in pair (R1 and R2), giving rise to a single output files from a pair of input files.\n\n\
     ${BOLD}<input_dir>${END}\n\
         Directory containing .fastq.gz or .fq.gz files to use as input for alignment.\n\
-        It usually corresponds to 'Raw' or 'Trimmed'.\n\n\
+        It usually corresponds to 'Raw' or 'Trimmed/Trimmomatic'.\n\n\
     ${BOLD}<refindex>${END}\n\
         Path to reference previously indexed using rsem-prepare-reference.\n\
         Provided path must be ended by reference name (prefix common to files).\n\n\
 
 ${BOLD}EXAMPLE USAGE${END}\n\
-    sh RSEM.sh ${BOLD}PE Trimmed /LAB-DATA/BiRD/users/${usr}/Ref/refdata-RSEM-mm39.108/mm39_108${END}\n"
+    sh RSEM.sh ${BOLD}PE Trimmed/Trimmomatic /LAB-DATA/BiRD/users/${usr}/Ref/refdata-RSEM-mm39.108/mm39_108${END}\n"
 }
 
 ################################################################################################################
@@ -48,8 +52,8 @@ if [ $# -eq 1 ] && [ $1 == "help" ]; then
         exit
 elif [ $# -ne 3 ]; then
     # Error if less than 3 arguments are provided
-    echo 'Error synthax : please use following synthax'
-    echo '          sh RSEM.sh <SE|PE> <input_dir> <refindex>'
+    echo "Error synthax : please use following synthax"
+    echo "          sh ${script_name} <SE|PE> <input_dir> <refindex>"
     exit
 elif (( !${#files} )); then
     # Error if provided directory is empty or does not exists
@@ -58,11 +62,11 @@ elif (( !${#files} )); then
 else
     # Error if the correct number of arguments is provided but the first does not match 'SE' or 'PE'
     case $1 in
-        PE|SE|pe|se) 
+        PE|SE) 
             ;;
         *) 
-            echo 'Error synthax : please use following synthax'
-            echo '          sh RSEM.sh <SE|PE> <input_dir> <refindex>'
+            echo "Error synthax : please use following synthax"
+            echo "          sh ${script_name} <SE|PE> <input_dir> <refindex>"
             exit;;
     esac
 fi
