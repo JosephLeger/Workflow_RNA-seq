@@ -79,7 +79,7 @@ module load star/2.7.5a
 mkdir -p ./RSEM
 
 # Initialize SampleSheet
-echo "FileName,SampleName,CellType,Batch" > ./RSEM/Sample_Sheet.csv
+echo "FileName,SampleName,CellType,Batch" > ./RSEM/SampleSheet_Bulk_RNA.csv
 
 if [ $1 == "SE" ]; then
     # Precise to eliminate empty lists for the loop
@@ -98,7 +98,7 @@ if [ $1 == "SE" ]; then
         $3 \
         RSEM/${output}" | qsub -N RSEM_SE_${output}
         # Append SampleSheet
-        echo "${output}.genes.results,,," >> ./RSEM/Sample_Sheet.csv
+        echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv
     done           
 elif [ $1 == "PE" ]; then
     # Precise to eliminate empty lists for the loop
@@ -122,7 +122,7 @@ elif [ $1 == "PE" ]; then
         $3 \
         RSEM/$output" | qsub -N RSEM_PE_${output}
         # Append SampleSheet
-        echo "${output}.genes.results,,," >> ./RSEM/Sample_Sheet.csv
+        echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv
     done   
 fi
 
