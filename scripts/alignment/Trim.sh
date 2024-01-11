@@ -198,8 +198,8 @@ if [ $U_arg == "Trimmomatic" ]; then
             SLIDINGWINDOW:${S_arg} \
             LEADING:${L_arg} \
             TRAILING:${T_arg} \
-            MINLEN:${M_arg} \
-            ${I_arg}" | qsub -N Trim_${1}_${current_file}
+            ${I_arg}\
+            MINLEN:${M_arg}" | qsub -N Trim_${1}_${current_file}
         done
     elif [ $1 == "PE" ]; then
         # Create output directories
@@ -285,8 +285,8 @@ elif [ $U_arg == "Both" ]; then
             SLIDINGWINDOW:${S_arg} \
             LEADING:${L_arg} \
             TRAILING:${T_arg} \
-            MINLEN:${M_arg} \
-            ${I_arg}" | qsub -N ClumTrim_${1}_${current_file}
+            ${I_arg}\
+            MINLEN:${M_arg}" | qsub -N ClumTrim_${1}_${current_file}
         done
     elif [ $1 == "PE" ]; then
         # Create output directory exclusive of PE
@@ -322,8 +322,8 @@ elif [ $U_arg == "Both" ]; then
             SLIDINGWINDOW:${S_arg} \
             LEADING:${L_arg} \
             TRAILING:${T_arg} \
-            MINLEN:${M_arg} \
-            ${I_arg}" | qsub -N ClumTrim_${1}_${current_pair}
+            ${I_arg}\
+            MINLEN:${M_arg}" | qsub -N ClumTrim_${1}_${current_pair}
         done 
     fi
 fi
