@@ -1,7 +1,3 @@
-# Bulk_RNA-seq
-Custom pipeline for Bulk RNA-seq analysis
-
-
 # Workflow description
 
 Two quantification methods are available in this workflow :  
