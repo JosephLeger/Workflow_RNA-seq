@@ -91,7 +91,6 @@ sh MultiQC.sh QC/Raw
 Pooled results are available in **QC/MultiQC/QC_Raw_MultiQC.html** file.  
 
 ## 3. Trimming
-Syntax : ```sh Trim.sh [options] <SE|PE> <input_dir>```  
 If low quality bases or adapter enrichment is detected, you will need to perform trimming step.  
 Provided trimming script allow several options :
 * **-S** (Slingdingwindow) : Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold.  
@@ -100,8 +99,9 @@ Provided trimming script allow several options :
 * **-M** (Minlen) : This module removes reads that fall below the specified minimal length.  
 * **-I** (Illuminaclip) : Cuts adapters and other Illumina-specific sequences present in the reads.
   
-*For more details, please read [Trimmomatic Manual](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf).*
- 
+*For more details, please read [Trimmomatic Manual](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf).*  
+  
+Syntax : ```sh Trim.sh [options] <SE|PE> <input_dir>```  
 ```bash
 sh Trim.sh -S 4:15 -L 3 -T 3 -M 36 -I ./Ref/NexteraPE-PE.fa:2:30:10 PE Raw
 ```
