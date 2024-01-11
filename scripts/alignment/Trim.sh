@@ -119,7 +119,7 @@ case $I_arg in
     None) 
         I_arg='';;
     *) 
-        I_arg='ILLUMINACLIP:'${I_arg};;
+        I_arg='ILLUMINACLIP:'${I_arg}' ';;
 esac
 case $D_arg in
     True|true|TRUE|T|t) 
@@ -194,11 +194,10 @@ if [ $U_arg == "Trimmomatic" ]; then
             conda activate base \n\
             conda activate Trimmomatic \n\
             trimmomatic SE -threads 4 $i \
-            ${outdir}/${output} \
+            ${outdir}/${output} ${I_arg}\
             SLIDINGWINDOW:${S_arg} \
             LEADING:${L_arg} \
             TRAILING:${T_arg} \
-            ${I_arg}\
             MINLEN:${M_arg}" | qsub -N Trim_${1}_${current_file}
         done
     elif [ $1 == "PE" ]; then
@@ -228,12 +227,11 @@ if [ $U_arg == "Trimmomatic" ]; then
             conda activate Trimmomatic \n\
             trimmomatic PE -threads 4 $R1 $R2 \
             ${outdir}/Paired/${P1} ${outdir}/Unpaired/${U1} \
-            ${outdir}/Paired/${P2} ${outdir}/Unpaired/${U2} \
+            ${outdir}/Paired/${P2} ${outdir}/Unpaired/${U2} ${I_arg}\
             SLIDINGWINDOW:${S_arg} \
             LEADING:${L_arg} \
             TRAILING:${T_arg} \
-            MINLEN:${M_arg} \
-            ${I_arg}" | qsub -N Trim_${1}_${current_pair}
+            MINLEN:${M_arg}" | qsub -N Trim_${1}_${current_pair}
         done  
     fi
 elif [ $U_arg == "Clumpify" ]; then
@@ -281,11 +279,10 @@ elif [ $U_arg == "Both" ]; then
             conda activate base \n\
             conda activate Trimmomatic \n\
             trimmomatic SE -threads 4 ${outdir1}/${output1} \
-            ${outdir2}/${output2} \
+            ${outdir2}/${output2} ${I_arg}\
             SLIDINGWINDOW:${S_arg} \
             LEADING:${L_arg} \
             TRAILING:${T_arg} \
-            ${I_arg}\
             MINLEN:${M_arg}" | qsub -N ClumTrim_${1}_${current_file}
         done
     elif [ $1 == "PE" ]; then
@@ -318,11 +315,10 @@ elif [ $U_arg == "Both" ]; then
             conda activate Trimmomatic \n\
             trimmomatic PE -threads 4 ${outdir1}/${ClumOut1} ${outdir1}/${ClumOut2} \
             ${outdir2}/Paired/${P1} ${outdir2}/Unpaired/${U1} \
-            ${outdir2}/Paired/${P2} ${outdir2}/Unpaired/${U2} \
+            ${outdir2}/Paired/${P2} ${outdir2}/Unpaired/${U2} ${I_arg}\
             SLIDINGWINDOW:${S_arg} \
             LEADING:${L_arg} \
             TRAILING:${T_arg} \
-            ${I_arg}\
             MINLEN:${M_arg}" | qsub -N ClumTrim_${1}_${current_pair}
         done 
     fi
