@@ -26,7 +26,7 @@ ${BOLD}ARGUMENTS${END}\n\
     ${BOLD}<ref_name>${END}\n\
         Define a name for making refseq. It is used as prefix for generated files, and will be important for calling refseq during alignment step.\n\n\
 ${BOLD}EXAMPLE USAGE${END}\n\
-    sh RSEM_refindex.sh ${BOLD}./Ref/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa ./Ref/Mus_musculus.GRCm39.108.gtf mm39.108${END}\n"
+    sh RSEM_refindex.sh ${BOLD}../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa ../Genome/Mus_musculus.GRCm39.108.gtf mm39.108${END}\n"
 }
 
 ################################################################################################################
