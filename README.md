@@ -106,6 +106,12 @@ Syntax : ```sh Trim.sh [options] <SE|PE> <input_dir>```
 sh Trim.sh -S 4:15 -L 3 -T 3 -M 36 -I ./Ref/NexteraPE-PE.fa:2:30:10 PE Raw
 ```
 
+Perform a quality check after trimming to ensure all adapters and low quality bases have been removed correctly
+```bash
+sh QC.sh Trimmed/Trimmomatic
+sh MultiQC.sh QC/Trimmed/Trimmomatic
+```  
+  
 # STAR Raw Counts
 ## 4. Alignment to genome
 Syntax : ```sh STAR.sh <SE|PE> <input_dir> <refindex>```
