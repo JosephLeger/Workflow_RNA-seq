@@ -18,9 +18,11 @@ Help()
 echo -e "${BOLD}####### STAR MANUAL #######${END}\n\n\
 ${BOLD}SYNTHAX${END}\n\
     sh STAR.sh <SE|PE> <input_dir> <refindex>\n\n\
+    
 ${BOLD}DESCRIPTION${END}\n\
     Perform genome alignement of paired or unpaired fastq files using STAR.\n\
     It creates a new folder './STAR' in which aligned BAM files and outputs are stored.\n\n\
+    
 ${BOLD}ARGUMENTS${END}\n\
     ${BOLD}<SE|PE>${END}\n\
         Define whether fastq files are Single-End (SE) or Paired-End (PE).\n\
