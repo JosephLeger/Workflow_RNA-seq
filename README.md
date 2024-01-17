@@ -73,13 +73,13 @@ Then, use provided scritps in refindex folder of this repository according to th
 ### Genome indexing
 Syntax : ```sh STAR_refindex.sh <FASTA> <GTF>```  
 ```bash
-sh STAR_refindex.sh ./Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ./Mus_musculus.GRCm39.108.gtf.gz
+sh STAR_refindex.sh ./Ref/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ./Ref/Mus_musculus.GRCm39.108.gtf.gz
 ```
 
 ### Transcriptome indexing
 Syntax : ```sh RSEM_refindex.sh <FASTA> <GTF> <build_name>```  
 ```bash
-sh RSEM_refindex.sh ./Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ./Mus_musculus.GRCm39.109.gtf.gz mm39.108
+sh RSEM_refindex.sh ./Ref/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ./Ref/Mus_musculus.GRCm39.109.gtf.gz mm39.108
 ```
 
 ## 2. Quality Check
