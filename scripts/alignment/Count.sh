@@ -18,10 +18,12 @@ Help()
 echo -e "${BOLD}####### COUNT MANUAL #######${END}\n\n\
 ${BOLD}SYNTHAX${END}\n\
     sh Count.sh <SE|PE> <input_dir> <gtf_file>\n\n\
+    
 ${BOLD}DESCRIPTION${END}\n\
     Generate a count table from aligned BAM files and associated Sample_Sheet.csv file for post-processing analysis workflow.\n\
     It creates a new folder './Counts' in which resulting files will be stored.\n\
     A pre-constructed Sample_Sheet.csv is created to make post-processing analyssi easier.\n\n\
+    
 ${BOLD}ARGUMENTS${END}\n\
     ${BOLD}<SE|PE>${END}\n\
         Define whether bam files were aligned by Single-End (SE) or Paired-End (PE).\n\n\
@@ -30,6 +32,7 @@ ${BOLD}ARGUMENTS${END}\n\
         It usually corresponds to 'STAR'.\n\n\
     ${BOLD}<gtf_file>${END}\n\
         Path to .gtf file previously used for reference indexation.\n\n\
+
 ${BOLD}EXAMPLE USAGE${END}\n\
     sh Count.sh ${BOLD}PE STAR /LAB-DATA/BiRD/users/${usr}/Ref/Genome/Mus_musculus.GRCm39.108.gtf${END}\n"
 }
