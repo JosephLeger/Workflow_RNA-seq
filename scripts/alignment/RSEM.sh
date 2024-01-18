@@ -132,7 +132,7 @@ elif [ $1 == "PE" ]; then
         $3 \
         RSEM/$output" | qsub -N RSEM_PE_${output}
         # Update REPORT
-        echo -e "RSEM_SE_${output} | rsem-calculate-expression -p 8 --paired-end --star --star-gzipped-read-file $R1 $R2 $3 RSEM/${output}" >> ./Reports/0_REPORT.txt 
+        echo -e "RSEM_PE_${output} | rsem-calculate-expression -p 8 --paired-end --star --star-gzipped-read-file $R1 $R2 $3 RSEM/${output}" >> ./Reports/0_REPORT.txt 
         # Append SampleSheet
         echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv
     done   
