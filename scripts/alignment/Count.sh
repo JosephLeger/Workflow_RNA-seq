@@ -74,6 +74,11 @@ fi
 
 module load subread/2.0.1
 
+# Generate REPORT
+mkdir -p ./Reports
+echo '#' >> ./Reports/0_REPORT.txt
+date >> ./Reports/0_REPORT.txt
+
 # Create directory in QC folder following the same path than input path provided
 mkdir -p ./Counts
 echo "Sample,File,Group,Sex" > Counts/Sample_Sheet.csv
@@ -84,12 +89,16 @@ if [ $1 == "SE" ]; then
     featureCounts -a $3 \
     -o Counts/Count_Table.out \
     -T 8 $2/*.bam" | qsub -N featureCount_SE
+    # Update REPORT
+    echo -e "featureCount_SE | featureCounts -a $3 -o Counts/Count_Table.out -T 8 $2/*.bam" >> ./Reports/0_REPORT.txt
 elif [ $1 == "PE" ]; then
     # Launch FastQC for each provided file
     echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
     featureCounts -a $3 \
     -o Counts/Count_Table.out \
     -T 8 $2/*.bam -p" | qsub -N featureCount_PE
+    # Update REPORT
+    echo -e "featureCount_PE | featureCounts -a $3 -o Counts/Count_Table.out -T 8 $2/*.bam -p" >> ./Reports/0_REPORT.txt
 fi
 
 # Generating Sample Sheet
