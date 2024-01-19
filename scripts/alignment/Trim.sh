@@ -178,9 +178,8 @@ fi
 ################################################################################################################
 
 # Generate REPORT
-mkdir -p ./Reports
-echo '#' >> ./Reports/0_REPORT.txt
-date >> ./Reports/0_REPORT.txt
+echo '#' >> ./0K_REPORT.txt
+date >> ./0K_REPORT.txt
 
 if [ $U_arg == "Trimmomatic" ]; then
     if [ $1 == "SE" ]; then
@@ -206,7 +205,7 @@ if [ $U_arg == "Trimmomatic" ]; then
             TRAILING:${T_arg} \
             MINLEN:${M_arg}" | qsub -N Trim_${1}_${current_file}
             # Update REPORT
-            echo -e "Trim_${1}_${current_file} | trimmomatic SE -threads 4 $i ${outdir}/${output} ${I_arg}SLIDINGWINDOW:${S_arg} LEADING:${L_arg} TRAILING:${T_arg} MINLEN:${M_arg}" >> ./Reports/0_REPORT.txt 
+            echo -e "Trim_${1}_${current_file} | trimmomatic SE -threads 4 $i ${outdir}/${output} ${I_arg}SLIDINGWINDOW:${S_arg} LEADING:${L_arg} TRAILING:${T_arg} MINLEN:${M_arg}" >> ./0K_REPORT.txt
         done
     elif [ $1 == "PE" ]; then
         # Create output directories
@@ -241,7 +240,7 @@ if [ $U_arg == "Trimmomatic" ]; then
             TRAILING:${T_arg} \
             MINLEN:${M_arg}" | qsub -N Trim_${1}_${current_pair}
             # Update REPORT
-            echo -e "Trim_${1}_${current_file} | trimmomatic PE -threads 4 $R1 $R2 ${outdir}/Paired/${P1} ${outdir}/Unpaired/${U1} ${outdir}/Paired/${P2} ${outdir}/Unpaired/${U2} ${I_arg}SLIDINGWINDOW:${S_arg} LEADING:${L_arg} TRAILING:${T_arg} MINLEN:${M_arg}" >> ./Reports/0_REPORT.txt
+            echo -e "Trim_${1}_${current_file} | trimmomatic PE -threads 4 $R1 $R2 ${outdir}/Paired/${P1} ${outdir}/Unpaired/${U1} ${outdir}/Paired/${P2} ${outdir}/Unpaired/${U2} ${I_arg}SLIDINGWINDOW:${S_arg} LEADING:${L_arg} TRAILING:${T_arg} MINLEN:${M_arg}" >> ./0K_REPORT.txt
         done  
     fi
 elif [ $U_arg == "Clumpify" ]; then
@@ -261,7 +260,7 @@ elif [ $U_arg == "Clumpify" ]; then
         echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
         clumpify.sh in=${i} out=${outdir}/${output} dedupe=${D_arg} subs=0" | qsub -N Clumpify_${current_file}
         # Update REPORT
-        echo -e "Clumpify_${current_file} | clumpify.sh in=${i} out=${outdir}/${output} dedupe=${D_arg} subs=0" >> ./Reports/0_REPORT.txt  
+        echo -e "Clumpify_${current_file} | clumpify.sh in=${i} out=${outdir}/${output} dedupe=${D_arg} subs=0" >> ./0K_REPORT.txt
     done
 elif [ $U_arg == "Both" ]; then
     module load bbmap
@@ -297,8 +296,8 @@ elif [ $U_arg == "Both" ]; then
             TRAILING:${T_arg} \
             MINLEN:${M_arg}" | qsub -N ClumTrim_${1}_${current_file}
             # Update REPORT
-            echo -e "Trim_${1}_${current_file} | clumpify.sh in=${i} out=${outdir1}/${output1} dedupe=${D_arg} subs=0" >> ./Reports/0_REPORT.txt
-            echo -e "                            trimmomatic SE -threads 4 $i ${outdir}/${output} ${I_arg}SLIDINGWINDOW:${S_arg} LEADING:${L_arg} TRAILING:${T_arg} MINLEN:${M_arg}" >> ./Reports/0_REPORT.txt 
+            echo -e "Trim_${1}_${current_file} | clumpify.sh in=${i} out=${outdir1}/${output1} dedupe=${D_arg} subs=0" >> ./0K_REPORT.txt
+            echo -e "                            trimmomatic SE -threads 4 $i ${outdir}/${output} ${I_arg}SLIDINGWINDOW:${S_arg} LEADING:${L_arg} TRAILING:${T_arg} MINLEN:${M_arg}" >> ./0K_REPORT.txt
         done
     elif [ $1 == "PE" ]; then
         # Create output directory exclusive of PE
@@ -336,9 +335,9 @@ elif [ $U_arg == "Both" ]; then
             TRAILING:${T_arg} \
             MINLEN:${M_arg}" | qsub -N ClumTrim_${1}_${current_pair}
             # Update REPORT
-            echo -e "Trim_${1}_${current_file} | clumpify.sh in=${i} out=${outdir1}/${ClumOut1} dedupe=${D_arg} subs=0" >> ./Reports/0_REPORT.txt
-            echo -e "                            clumpify.sh in=${i_2} out=${outdir1}/${ClumOut2} dedupe=${D_arg} subs=0" >> ./Reports/0_REPORT.txt
-            echo -e "                            trimmomatic PE -threads 4 $R1 $R2 ${outdir}/Paired/${P1} ${outdir}/Unpaired/${U1} ${outdir}/Paired/${P2} ${outdir}/Unpaired/${U2} ${I_arg}SLIDINGWINDOW:${S_arg} LEADING:${L_arg} TRAILING:${T_arg} MINLEN:${M_arg}" >> ./Reports/0_REPORT.txt
+            echo -e "Trim_${1}_${current_file} | clumpify.sh in=${i} out=${outdir1}/${ClumOut1} dedupe=${D_arg} subs=0" >> ./0K_REPORT.txt
+            echo -e "                            clumpify.sh in=${i_2} out=${outdir1}/${ClumOut2} dedupe=${D_arg} subs=0" >> ./0K_REPORT.txt
+            echo -e "                            trimmomatic PE -threads 4 $R1 $R2 ${outdir}/Paired/${P1} ${outdir}/Unpaired/${U1} ${outdir}/Paired/${P2} ${outdir}/Unpaired/${U2} ${I_arg}SLIDINGWINDOW:${S_arg} LEADING:${L_arg} TRAILING:${T_arg} MINLEN:${M_arg}" >> ./0K_REPORT.txt
         
         done 
     fi
