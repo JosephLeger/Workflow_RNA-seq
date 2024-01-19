@@ -61,5 +61,5 @@ echo '#' >> ./0K_REPORT.txt
 date >> ./0K_REPORT.txt
 
 echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
-rsem-prepare-reference --star -p 8 --gtf $2 $1 $3" | qsub -N RSEM_RefIndex
-echo -e "RSEM_RefIndex | rsem-prepare-reference --star -p 8 --gtf $2 $1 $3" >> ./0K_REPORT.txt 
+rsem-prepare-reference --star -p 8 --gtf $2 $1 $3" | qsub -N RSEM_RefIndex_${3}
+echo -e "RSEM_RefIndex_${3} | rsem-prepare-reference --star -p 8 --gtf $2 $1 $3" >> ./0K_REPORT.txt 
