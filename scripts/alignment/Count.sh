@@ -75,9 +75,8 @@ fi
 module load subread/2.0.1
 
 # Generate REPORT
-mkdir -p ./Reports
-echo '#' >> ./Reports/0_REPORT.txt
-date >> ./Reports/0_REPORT.txt
+echo '#' >> ./0_REPORT.txt
+date >> ./0_REPORT.txt
 
 # Create directory in QC folder following the same path than input path provided
 mkdir -p ./Counts
@@ -98,7 +97,7 @@ elif [ $1 == "PE" ]; then
     -o Counts/Count_Table.out \
     -T 8 $2/*.bam -p" | qsub -N featureCount_PE
     # Update REPORT
-    echo -e "featureCount_PE | featureCounts -a $3 -o Counts/Count_Table.out -T 8 $2/*.bam -p" >> ./Reports/0_REPORT.txt
+    echo -e "featureCount_PE | featureCounts -a $3 -o Counts/Count_Table.out -T 8 $2/*.bam -p" >> ./0_REPORT.txt
 fi
 
 # Generating Sample Sheet
