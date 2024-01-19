@@ -53,5 +53,10 @@ fi
 
 module load star/2.7.10b
 
+# Generate REPORT
+echo '#' >> ./0K_REPORT.txt
+date >> ./0K_REPORT.txt
+
 echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
 STAR --runMode genomeGenerate --genomeFastaFiles $1 --sjdbGTFfile $2 --runThreadN 16" | qsub -N STAR_RefIndex
+echo -e "STAR_RefIndex | STAR --runMode genomeGenerate --genomeFastaFiles $1 --sjdbGTFfile $2 --runThreadN 16" >> ./0K_REPORT.txt 
