@@ -56,5 +56,10 @@ fi
 module load rsem/1.3.2
 module load star/2.7.10b
 
+# Generate REPORT
+echo '#' >> ./0K_REPORT.txt
+date >> ./0K_REPORT.txt
+
 echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
 rsem-prepare-reference --star -p 8 --gtf $2 $1 $3" | qsub -N RSEM_RefIndex
+echo -e "RSEM_RefIndex | rsem-prepare-reference --star -p 8 --gtf $2 $1 $3" >> ./0K_REPORT.txt 
