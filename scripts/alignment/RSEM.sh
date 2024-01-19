@@ -79,9 +79,8 @@ module load rsem/1.3.2
 module load star/2.7.5a
 
 # Generate REPORT
-mkdir -p ./Reports
-echo '#' >> ./Reports/0_REPORT.txt
-date >> ./Reports/0_REPORT.txt
+echo '#' >> ./0K_REPORT.txt
+date >> ./0K_REPORT.txt
 
 # Create RSEM directory for outputs
 mkdir -p ./RSEM
@@ -106,7 +105,7 @@ if [ $1 == "SE" ]; then
         $3 \
         RSEM/${output}" | qsub -N RSEM_SE_${output}
         # Update REPORT
-        echo -e "RSEM_SE_${output} | rsem-calculate-expression -p 8 --star --star-gzipped-read-file $i $3 RSEM/${output}" >> ./Reports/0_REPORT.txt   
+        echo -e "RSEM_SE_${output} | rsem-calculate-expression -p 8 --star --star-gzipped-read-file $i $3 RSEM/${output}" >> ./0K_REPORT.txt
         # Append SampleSheet
         echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv       
     done           
@@ -132,7 +131,7 @@ elif [ $1 == "PE" ]; then
         $3 \
         RSEM/$output" | qsub -N RSEM_PE_${output}
         # Update REPORT
-        echo -e "RSEM_PE_${output} | rsem-calculate-expression -p 8 --paired-end --star --star-gzipped-read-file $R1 $R2 $3 RSEM/${output}" >> ./Reports/0_REPORT.txt 
+        echo -e "RSEM_PE_${output} | rsem-calculate-expression -p 8 --paired-end --star --star-gzipped-read-file $R1 $R2 $3 RSEM/${output}" >> ./0K_REPORT.txt
         # Append SampleSheet
         echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv
     done   
