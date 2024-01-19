@@ -125,6 +125,6 @@ elif [ $1 == "PE" ]; then
                 --readFilesCommand gunzip -c \
                 --outFileNamePrefix STAR/$output" | qsub -N STAR_PE_${output}
                 # Update REPORT
-                 echo -e "STAR_PE_${output} | STAR --runMode alignReads --genomeDir $3 --outSAMtype BAM SortedByCoordinate --readFilesIn $R1 $R2 --runThreadN 10 --readFilesCommand gunzip -c --outFileNamePrefix STAR/$output" >> ./0K_REPORT.txt
+                echo -e "STAR_PE_${output} | STAR --runMode alignReads --genomeDir $3 --outSAMtype BAM SortedByCoordinate --readFilesIn $R1 $R2 --runThreadN 10 --readFilesCommand gunzip -c --outFileNamePrefix STAR/$output" >> ./0K_REPORT.txt
         done
 fi
