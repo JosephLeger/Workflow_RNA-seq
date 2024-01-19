@@ -74,7 +74,6 @@ fi
 module load fastqc/0.11.9
 
 # Generate REPORT
-mkdir -p ./Reports
 echo '#' >> ./0K_REPORT.txt
 date >> ./0K_REPORT.txt
 
