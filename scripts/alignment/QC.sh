@@ -91,9 +91,9 @@ for input in "$@"; do
                 # Set variables for jobname
                 current_file=`echo $i | sed -e "s@${input}\/@@g" | sed -e "s@\.fastq\.gz\|\.fq\.gz@@g"`
                 # Launch QC as a qsub
-                echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
-                fastqc -o QC/${input} --noextract -f fastq $i" | qsub -N QC_${name}_${current_file}
-                # Update REPORT
-                echo -e "QC_${name}_${current_file} | fastqc -o QC/${input} --noextract -f fastq $i" >> ./0K_REPORT.txt           
+                JOB="QC_${name}_${current_file}"
+                COMMAND="fastqc -o QC/${input} --noextract -f fastq $i"
+                echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\ "${COMMAND} | qsub -N ${JOB}
+                echo -e ${JOBNAME}' | '${COMMAND} >> ./0K_REPORT.txt         
         done
 done
