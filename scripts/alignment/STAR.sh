@@ -77,9 +77,8 @@ fi
 module load star/2.7.10b
 
 # Generate REPORT
-mkdir -p ./Reports
-echo '#' >> ./Reports/0_REPORT.txt
-date >> ./Reports/0_REPORT.txt
+echo '#' >> ./0K_REPORT.txt
+date >> ./0K_REPORT.txt
 
 if [ $1 == "SE" ]; then
         # Create STAR directory for outputs
@@ -101,7 +100,7 @@ if [ $1 == "SE" ]; then
                 --readFilesCommand gunzip -c \
                 --outFileNamePrefix STAR/$output" | qsub -N STAR_SE_${output}
                 # Update REPORT
-                echo -e "STAR_SE_${output} | STAR --runMode alignReads --genomeDir $3 --outSAMtype BAM SortedByCoordinate --readFilesIn $i --runThreadN 10 --readFilesCommand gunzip -c --outFileNamePrefix STAR/$output" >> ./Reports/0_REPORT.txt 
+                echo -e "STAR_SE_${output} | STAR --runMode alignReads --genomeDir $3 --outSAMtype BAM SortedByCoordinate --readFilesIn $i --runThreadN 10 --readFilesCommand gunzip -c --outFileNamePrefix STAR/$output" >> ./0K_REPORT.txt 
         done
 elif [ $1 == "PE" ]; then
         # Create STAR directory for outputs
@@ -126,6 +125,6 @@ elif [ $1 == "PE" ]; then
                 --readFilesCommand gunzip -c \
                 --outFileNamePrefix STAR/$output" | qsub -N STAR_PE_${output}
                 # Update REPORT
-                 echo -e "STAR_PE_${output} | STAR --runMode alignReads --genomeDir $3 --outSAMtype BAM SortedByCoordinate --readFilesIn $R1 $R2 --runThreadN 10 --readFilesCommand gunzip -c --outFileNamePrefix STAR/$output"
+                 echo -e "STAR_PE_${output} | STAR --runMode alignReads --genomeDir $3 --outSAMtype BAM SortedByCoordinate --readFilesIn $R1 $R2 --runThreadN 10 --readFilesCommand gunzip -c --outFileNamePrefix STAR/$output" >> ./0K_REPORT.txt
         done
 fi
