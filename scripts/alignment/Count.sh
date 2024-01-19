@@ -87,17 +87,17 @@ if [ $1 == "SE" ]; then
     echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
     featureCounts -a $3 \
     -o Counts/Count_Table.out \
-    -T 8 $2/*.bam" | qsub -N featureCount_SE
+    -T 8 $2/*.bam" | qsub -N Count_SE
     # Update REPORT
-    echo -e "featureCount_SE | featureCounts -a $3 -o Counts/Count_Table.out -T 8 $2/*.bam" >> ./0K_REPORT.txt
+    echo -e "Count_SE | featureCounts -a $3 -o Counts/Count_Table.out -T 8 $2/*.bam" >> ./0K_REPORT.txt
 elif [ $1 == "PE" ]; then
     # Launch FastQC for each provided file
     echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
     featureCounts -a $3 \
     -o Counts/Count_Table.out \
-    -T 8 $2/*.bam -p" | qsub -N featureCount_PE
+    -T 8 $2/*.bam -p" | qsub -N Count_PE
     # Update REPORT
-    echo -e "featureCount_PE | featureCounts -a $3 -o Counts/Count_Table.out -T 8 $2/*.bam -p" >> ./0K_REPORT.txt
+    echo -e "Count_PE | featureCounts -a $3 -o Counts/Count_Table.out -T 8 $2/*.bam -p" >> ./0K_REPORT.txt
 fi
 
 # Generating Sample Sheet
