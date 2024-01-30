@@ -93,7 +93,7 @@ for input in "$@"; do
                 # Launch QC as a qsub
                 JOB="QC_${name}_${current_file}"
                 COMMAND="fastqc -o QC/${input} --noextract -f fastq $i"
-                echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\ "${COMMAND} | qsub -N ${JOB}
+                echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n"${COMMAND} | qsub -N ${JOB}
                 echo -e ${JOBNAME}' | '${COMMAND} >> ./0K_REPORT.txt         
         done
 done
