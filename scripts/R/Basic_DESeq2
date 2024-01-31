@@ -360,7 +360,7 @@ for( i in 1:nrow(COMPARISONS)){
   # Set current comparison members
   control <- COMPARISONS$Control[i] 
   tested  <- COMPARISONS$Tested[i]
-  title   <- paste(tested, "VS", control, sep = " ")
+  title   <- paste0(tested, "VS", control)
   
   # Full Result list, adding Symbols and reorder list
   full_res[[i]] <- results(dds, contrast = c("Group", tested, control))
