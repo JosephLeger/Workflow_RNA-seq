@@ -206,9 +206,6 @@ dev.off()
 ## NORMALIZATION ---------------------------------------------------------------
 #===============================================================================
 
-Table <- read.table(paste0(PATH, '/Table/Table_Raw.txt'), 
-                    sep = '\t', check.names = FALSE)
-
 # Normalization
 dds        <- DESeqDataSetFromMatrix(countData = Table[,2:ncol(Table)], 
                                      colData = METADATA, design = ~ Group)
@@ -233,10 +230,6 @@ write.table(Table_norm, paste0(PATH, '/Table/Table_Norm.txt'),
 #===============================================================================
 ## HEATMAP & SAMPLE REPARTITION AFTER NORMALIZATION ----------------------------
 #===============================================================================
-
-# Load Table
-Table <- read.table(paste0(PATH, '/Table/Table_Raw.txt'), 
-                    sep = '\t', check.names = FALSE)
 
 ## HEATMAPS BY SAMPLE GROUPS ---------------------------------------------------
 
