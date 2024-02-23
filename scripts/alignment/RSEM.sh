@@ -23,7 +23,12 @@ ${BOLD}DESCRIPTION${END}\n\
     Perform transcriptome alignement and transcript quantification of paired or unpaired fastq files using RSEM.\n\
     It creates a new folder './RSEM' in which aligned BAM files and outputs are stored.\n\
     A pre-filled SampleSheet in CSV format is generated in parallel.\n\n\
-    
+
+${BOLD}OPTIONS${END}\n\
+    ${BOLD}-B${END} ${UDL}boolean${END}, ${BOLD}B${END}amGeneration\n\
+        Define whether tp generate output BAM files. \n\
+        Default = 'True'\n\n\
+        
 ${BOLD}ARGUMENTS${END}\n\
     ${BOLD}<SE|PE>${END}\n\
         Define whether FASTQ files are Single-End (SE) or Paired-End (PE).\n\
@@ -39,6 +44,39 @@ ${BOLD}ARGUMENTS${END}\n\
 ${BOLD}EXAMPLE USAGE${END}\n\
     sh RSEM.sh ${BOLD}PE Trimmed/Trimmomatic /LAB-DATA/BiRD/users/${usr}/Ref/refdata-RSEM-mm39.108/mm39.108${END}\n"
 }
+
+################################################################################################################
+### OPTIONS ----------------------------------------------------------------------------------------------------
+################################################################################################################
+
+# Set default values
+B_arg='True'
+
+# Change default values if another one is precised
+while getopts ":B:" option; do
+    case $option in
+        B) # BAM GENERATION
+            B_arg=${OPTARG};;
+        \?) # Error
+            echo "Error : invalid option"
+            echo "      Allowed options are [-B]"
+            echo "      Enter 'sh ${script_name} help' for more details"
+            exit;;
+    esac
+done
+
+case $B_arg in
+    True|true|TRUE|T|t) 
+        B_arg='--output-genome-bam --sort-bam-by-coordinate';;
+    False|false|FALSE|F|f) 
+        B_arg='';;
+    *)
+        echo "Error value : -B argument must be 'true' or 'false'"
+        exit;;
+esac
+
+# Deal with options [-B] and arguments [$1|$2]
+shift $((OPTIND-1))
 
 ################################################################################################################
 ### ERRORS -----------------------------------------------------------------------------------------------------
@@ -82,11 +120,19 @@ module load star/2.7.5a
 echo '#' >> ./0K_REPORT.txt
 date >> ./0K_REPORT.txt
 
+Launch()
+{
+# Launch COMMAND and save report
+echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n"${COMMAND} | qsub -N ${JOB}
+echo -e ${JOBNAME}' | '${COMMAND} >> ./0K_REPORT.txt
+}
+
 # Create RSEM directory for outputs
-mkdir -p ./RSEM
+outdir='./RSEM'
+mkdir -p ${outdir}
 
 # Initialize SampleSheet
-echo "FileName,SampleName,CellType,Batch" > ./RSEM/SampleSheet_Bulk_RNA.csv
+echo "FileName,SampleName,CellType,Batch" > ${outdir}/SampleSheet_Bulk_RNA.csv
 
 if [ $1 == "SE" ]; then
     # Precise to eliminate empty lists for the loop
@@ -95,45 +141,31 @@ if [ $1 == "SE" ]; then
     for i in $2/*.fastq.gz $2/*.fq.gz; do
         # Define individual output filenames
         output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/\.fastq\.gz\|\.fq\.gz//g'`
-        # Launch single alignments
-        echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
-        rsem-calculate-expression \
-        -p 8 \
-        --star \
-        --star-gzipped-read-file \
-        $i \
-        $3 \
-        RSEM/${output}" | qsub -N RSEM_SE_${output}
-        # Update REPORT
-        echo -e "RSEM_SE_${output} | rsem-calculate-expression -p 8 --star --star-gzipped-read-file $i $3 RSEM/${output}" >> ./0K_REPORT.txt
+
+        # Define JOB and COMMAND and launch job
+        JOB=RSEM_${1}_${output}
+        COMMAND="rsem-calculate-expression -p 8 --star --star-gzipped-read-file $i $3 ${outdir}/${output} ${B_arg}"
+        Launch
         # Append SampleSheet
         echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv       
     done           
 elif [ $1 == "PE" ]; then
     # Precise to eliminate empty lists for the loop
     shopt -s nullglob
-    # If SE (Single-End) is selected, every files are aligned separately
+    # If PE (Paired-End) is selected, files are aligned by pairs
     for i in $2/*_R1*.fastq.gz $2/*_R1*.fq.gz; do
         # Define paired files
         R1=$i
         R2=`echo $i | sed -e 's/_R1/_R2/g'`
         # Define unique output filename for paires
         output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/_R1//g' | sed -e 's/\.fastq\.gz\|\.fq\.gz//g'`
-        # Launch paired alignments
-        echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
-        rsem-calculate-expression \
-        -p 8 \
-        --paired-end \
-        --star \
-        --star-gzipped-read-file \
-        $R1 \
-        $R2 \
-        $3 \
-        RSEM/$output" | qsub -N RSEM_PE_${output}
-        # Update REPORT
-        echo -e "RSEM_PE_${output} | rsem-calculate-expression -p 8 --paired-end --star --star-gzipped-read-file $R1 $R2 $3 RSEM/${output}" >> ./0K_REPORT.txt
+        
+        JOB="RSEM_${1}_${output}"
+        COMMAND="rsem-calculate-expression -p 8 --paired-end --star --star-gzipped-read-file $R1 $R2 $3 ${outdir}/${output} ${B_arg}"
+        Launch
         # Append SampleSheet
         echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv
     done   
 fi
+
 
