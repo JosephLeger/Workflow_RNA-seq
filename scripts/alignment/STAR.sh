@@ -21,7 +21,8 @@ ${BOLD}SYNTHAX${END}\n\
     
 ${BOLD}DESCRIPTION${END}\n\
     Perform genome alignement of paired or unpaired fastq files using STAR.\n\
-    It creates a new folder './STAR' in which aligned BAM files and outputs are stored.\n\n\
+    It creates a new folder './STAR' in which aligned BAM files and outputs are stored.\n\
+    After alignment, a MultiQC report is generated in '.QC/MultiQC' to summarize information about resulting files.\n\n\
     
 ${BOLD}ARGUMENTS${END}\n\
     ${BOLD}<SE|PE>${END}\n\
@@ -36,7 +37,7 @@ ${BOLD}ARGUMENTS${END}\n\
         Provided path must be ended by generated GenomDir folder.\n\n\
 
 ${BOLD}EXAMPLE USAGE${END}\n\
-    sh STAR.sh ${BOLD}PE Trimmed/Trimmomatic /LAB-DATA/BiRD/users/${usr}/Ref/refdata-STAR-mm39.108/GenomeDir${END}\n"
+    sh ${script_name} ${BOLD}PE Trimmed/Trimmomatic/Paired ${usr}/Ref/refdata-STAR-mm39.108/GenomeDir${END}\n"
 }
 
 ################################################################################################################
@@ -74,37 +75,52 @@ fi
 ### SCRIPT -----------------------------------------------------------------------------------------------------
 ################################################################################################################
 
+## SETUP - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 module load star/2.7.10b
 
 # Generate REPORT
 echo '#' >> ./0K_REPORT.txt
 date >> ./0K_REPORT.txt
 
+Launch()
+{
+# Launch COMMAND and save report
+echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n"${COMMAND} | qsub -N ${JOBNAME} ${WAIT}
+echo -e ${JOBNAME} >> ./0K_REPORT.txt
+echo -e ${COMMAND} |  sed 's@^@   \| @' >> ./0K_REPORT.txt
+}
+WAIT=''
+
+
+## STAR - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Initialize JOBLIST to wait before running MultiQC
+JOBLIST='_'
+
+# Create STAR directory for outputs
+outdir='STAR'
+mkdir -p ${outdir}
+
 if [ $1 == "SE" ]; then
-        # Create STAR directory for outputs
-        mkdir -p ./STAR
         # Precise to eliminate empty lists for the loop
         shopt -s nullglob
         # If SE (Single-End) is selected, every files are aligned separately
         for i in $2/*.fastq.gz $2/*.fq.gz; do
                 # Define individual output filenames
                 output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/\.fastq\.gz\|\.fq\.gz//g'`
-                # Launch single alignments
-                echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
-                STAR \
+		# Define JOBNAME and COMMAND and launch job while append JOBLIST
+		JOBNAME="STAR_SE_${output}"
+		COMMAND="STAR \
                 --runMode alignReads \
                 --genomeDir $3 \
                 --outSAMtype BAM SortedByCoordinate \
                 --readFilesIn $i \
                 --runThreadN 10 \
                 --readFilesCommand gunzip -c \
-                --outFileNamePrefix STAR/$output" | qsub -N STAR_SE_${output}
-                # Update REPORT
-                echo -e "STAR_SE_${output} | STAR --runMode alignReads --genomeDir $3 --outSAMtype BAM SortedByCoordinate --readFilesIn $i --runThreadN 10 --readFilesCommand gunzip -c --outFileNamePrefix STAR/$output" >> ./0K_REPORT.txt 
-        done
+                --outFileNamePrefix ${outdir}/${output}"
+		JOBLIST=${JOBLIST}','${JOBNAME}
+		Launch
+	done
 elif [ $1 == "PE" ]; then
-        # Create STAR directory for outputs
-        mkdir -p ./STAR
         # Precise to eliminate empty lists for the loop
         shopt -s nullglob
         # If PE (Paired-End) is selected, each paired files are aligned together
@@ -114,17 +130,30 @@ elif [ $1 == "PE" ]; then
                 R2=`echo $i | sed -e 's/_R1/_R2/g'`
                 # Define unique output filename for paires
                 output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/_R1//g' | sed -e 's/\.fastq\.gz\|\.fq\.gz//g'`
-                # Launch paired alignments
-                echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
-                STAR \
+		# Define JOBNAME and COMMAND and launch job while append JOBLIST
+		JOBNAME="STAR_PE_${output}"
+		COMMAND="STAR \
                 --runMode alignReads \
                 --genomeDir $3 \
                 --outSAMtype BAM SortedByCoordinate \
                 --readFilesIn $R1 $R2 \
                 --runThreadN 10 \
                 --readFilesCommand gunzip -c \
-                --outFileNamePrefix STAR/$output" | qsub -N STAR_PE_${output}
-                # Update REPORT
-                echo -e "STAR_PE_${output} | STAR --runMode alignReads --genomeDir $3 --outSAMtype BAM SortedByCoordinate --readFilesIn $R1 $R2 --runThreadN 10 --readFilesCommand gunzip -c --outFileNamePrefix STAR/$output" >> ./0K_REPORT.txt
-        done
+                --outFileNamePrefix ${outdir}/${output}"
+		JOBLIST=${JOBLIST}','${JOBNAME}
+		Launch
+	done
 fi
+
+## MULTIQC - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Create directory in QC folder for MultiQC
+outdir2='./QC/MultiQC'
+mkdir -p ${outdir2}
+# Create output name without strating 'QC/' and replacing '/' by '_'
+name=`echo ${outdir} | sed -e 's@\/@_@g'`
+
+## Define JOBNAME, COMMAND and launch with WAIT list
+JOBNAME="MultiQC_STAR"
+COMMAND="multiqc ${outdir} -o ${outdir2} -n STAR_MultiQC"
+WAIT=`echo ${JOBLIST} | sed -e 's@_,@-hold_jid @'`
+Launch
