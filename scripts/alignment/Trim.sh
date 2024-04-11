@@ -3,7 +3,7 @@
 ################################################################################################################
 ### HELP -------------------------------------------------------------------------------------------------------
 ################################################################################################################
-script_name='Trim.sh'
+script_name='2_Trim.sh'
 
 # Get user id for custom manual pathways
 usr=`id | sed -e 's@).*@@g' | sed -e 's@.*(@@g'`
@@ -21,13 +21,13 @@ ${BOLD}SYNTHAX${END}\n\
     sh ${script_name} [options] <SE|PE> <input_dir>\n\n\
     
 ${BOLD}DESCRIPTION${END}\n\
-    Perform trimming of paired or unpaired FASTQ files using Trimmomatic and/or file optimization and duplicates removal using Clumpify.\n\
-    It creates a new folder './Trimmed/Trimmomatic' in which trimmed FASTQ files are stored, and './Trimmed/Clumpify' in which optimized files are stored.\n\
+    Perform file optimization and duplicates removal using Clumpify or/and trimming of paired or unpaired FASTQ files using Trimmomatic.\n\
+    It creates new folders './Trimmed/Trimmomatic' in which trimmed FASTQ files are stored and './Trimmed/Clumpify' in which optimized files are stored.\n\
     If files are paired, trimming results are stored in subfolders './Trimmed/Trimmomatic/Paired' and './Trimmed/Trimmomatic/Unpaired'. In this case, it is recommended to use resulting paired files for following steps.\n\
 
 ${BOLD}OPTIONS${END}\n\
     ${BOLD}-U${END} ${UDL}tool${END}, ${BOLD}U${END}sedTool\n\
-        Define tools to use for trimming. Could be 'Trimmomatic', 'Clumpify' or 'Both'. \n\
+        Define tools to use for filtering. Could be 'Trimmomatic', 'Clumpify' or 'Both'. \n\
         Default = 'Trimmomatic'\n\n\
 
     ${BOLD}Trimmomatic Options${END}\n\n\
@@ -56,7 +56,7 @@ For more details, please see Trimmomatic manual.\n\n\
 ${BOLD}ARGUMENTS${END}\n\
     ${BOLD}<SE|PE>${END}\n\
         Define whether fastq files are Single-End (SE) or Paired-End (PE).\n\
-        If SE is provided, each file is processed separately and give rise to an output file stored in ./Trimmed directory.\n\
+        If SE is provided, each file is processed separately and give rise to an output file stored in output directory.\n\
         If PE is provided, files are trimmed in both paired and unpaired way, giving rise to four output files from a pair of input files.\n\n\
     ${BOLD}<input_dir>${END}\n\
         Directory containing .fastq.gz or .fq.gz files to use as input for trimming.\n\
@@ -126,7 +126,7 @@ case $D_arg in
     True|true|TRUE|T|t) 
         D_arg='t';;
     False|false|FALSE|F|f) 
-        D_arg='ILLUMINACLIP:'${I_arg};;
+        D_arg='f';;
     *)
         echo "Error value : -D argument must be 'true' or 'false'"
         exit;;
@@ -156,7 +156,7 @@ elif (( !${#files} )); then
     # Error if provided directory is empty or does not exists
     echo 'Error : can not find files in provided directory. Please make sure the provided directory exists, and contains .fastq.gz or .fq.gz files.'
     exit
-elif [ $U_arg == "Trimmomatic" ] && [ $I_arg != '' ] && (( !${#adapters} )); then
+elif ([ $U_arg == "Trimmomatic" ] || [ $U_arg == "Both" ]) && [ -n "$I_arg" ] && (( !${#adapters} )); then
     # Error if I_arg is precised but does not respect format
     echo "Error : invalid -I option format provided. For more details, please enter"
     echo "      sh ${script_name} help"
@@ -177,168 +177,105 @@ fi
 ### SCRIPT -----------------------------------------------------------------------------------------------------
 ################################################################################################################
 
+## SETUP - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Generate REPORT
 echo '#' >> ./0K_REPORT.txt
 date >> ./0K_REPORT.txt
 
-if [ $U_arg == "Trimmomatic" ]; then
-    if [ $1 == "SE" ]; then
-        # Create output directory
-        outdir='Trimmed/Trimmomatic'
-        mkdir -p ${outdir}
-        # Precise to eliminate empty lists for the loop
-        shopt -s nullglob
-        # For each read file
-        for i in $2/*.fastq.gz $2/*.fq.gz; do
-            # Set variables for jobname
-            current_file=`echo $i | sed -e "s@$2\/@@g" | sed -e 's@\.fastq\.gz\|\.fq\.gz@@g'`
-            # Define output file
-            output=${current_file}"_Trimmed.fastq.gz"
-            # Launch Trimming in qsub without ILLUMINACLIP
-            echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
-            conda activate base \n\
-            conda activate Trimmomatic \n\
-            trimmomatic SE -threads 4 $i \
-            ${outdir}/${output} ${I_arg}\
-            SLIDINGWINDOW:${S_arg} \
-            LEADING:${L_arg} \
-            TRAILING:${T_arg} \
-            MINLEN:${M_arg}" | qsub -N Trim_${1}_${current_file}
-            # Update REPORT
-            echo -e "Trim_${1}_${current_file} | trimmomatic SE -threads 4 $i ${outdir}/${output} ${I_arg}SLIDINGWINDOW:${S_arg} LEADING:${L_arg} TRAILING:${T_arg} MINLEN:${M_arg}" >> ./0K_REPORT.txt
-        done
-    elif [ $1 == "PE" ]; then
-        # Create output directories
-        outdir='Trimmed/Trimmomatic'
-        mkdir -p ${outdir}/{Paired,Unpaired}
-        # Precise to eliminate empty lists for the loop
-        shopt -s nullglob
-        # For each read file
-        for i in $2/*_R1*.fastq.gz $2/*_R1*.fq.gz; do
-            # Define paired files
-            R1=$i
-            R2=`echo $i | sed -e 's/_R1/_R2/g'`
-            # Set variables for jobname
-            current_R1=`echo $i | sed -e "s@$2\/@@g" | sed -e 's@\.fastq\.gz\|\.fq\.gz@@g'`
-            current_R2=`echo ${current_R1} | sed -e 's/_R1/_R2/g'`
-            current_pair=`echo ${current_R1} | sed -e 's@_R1@@g'`
-            # Define corresponding outputs for both paired and unpaired process
-            P1=${current_R1}"_Trimmed_Paired.fastq.gz"
-            U1=${current_R1}"_Trimmed_Unpaired.fastq.gz"
-            P2=${current_R2}"_Trimmed_Paired.fastq.gz"
-            U2=${current_R2}"_Trimmed_Unpaired.fastq.gz"
-            # Launch qsub for each files
-            # (if adapters detected, add : ILLUMINACLIP:Trimmed/NexteraPE-PE_Clontech-TTT.fa:2:30:10 )
-            echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
-            conda activate base \n\
-            conda activate Trimmomatic \n\
-            trimmomatic PE -threads 4 $R1 $R2 \
-            ${outdir}/Paired/${P1} ${outdir}/Unpaired/${U1} \
-            ${outdir}/Paired/${P2} ${outdir}/Unpaired/${U2} ${I_arg}\
-            SLIDINGWINDOW:${S_arg} \
-            LEADING:${L_arg} \
-            TRAILING:${T_arg} \
-            MINLEN:${M_arg}" | qsub -N Trim_${1}_${current_pair}
-            # Update REPORT
-            echo -e "Trim_${1}_${current_file} | trimmomatic PE -threads 4 $R1 $R2 ${outdir}/Paired/${P1} ${outdir}/Unpaired/${U1} ${outdir}/Paired/${P2} ${outdir}/Unpaired/${U2} ${I_arg}SLIDINGWINDOW:${S_arg} LEADING:${L_arg} TRAILING:${T_arg} MINLEN:${M_arg}" >> ./0K_REPORT.txt
-        done  
-    fi
-elif [ $U_arg == "Clumpify" ]; then
-    module load bbmap
-    # Create output directory
-    outdir='Trimmed/Clumpify'
-    mkdir -p ${outdir}
+Launch()
+{
+# Launch COMMAND and save report
+echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n"${COMMAND} | qsub -N ${JOBNAME} ${WAIT}
+echo -e ${JOBNAME} >> ./0K_REPORT.txt
+echo -e ${COMMAND} |  sed 's@^@   \| @' >> ./0K_REPORT.txt
+}
+WAIT=''
+
+## DEFINE FUNCTIONS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+CLUMPIFY_launch()
+{
+module load bbmap
+# Create output directory
+outdir='Trimmed/Clumpify'
+mkdir -p ${outdir}
+# Initialize JOBLIST for WAIT
+JOBLIST='_'
+# Precise to eliminate empty lists for the loop
+shopt -s nullglob
+# For each read file
+for i in ${2}/*.fastq.gz ${2}/*.fq.gz; do
+    # Set variables for jobname
+    current_file=`echo $i | sed -e "s@${2}\/@@g" | sed -e 's@\.fastq\.gz\|\.fq\.gz@@g'`
+    # Define JOBNAME and COMMAND and launch job
+    JOBNAME="Clumpify_${current_file}"
+    COMMAND="clumpify.sh in=${i} out=${outdir}/${current_file}_Clum.fastq.gz dedupe=${D_arg} subs=0"
+    JOBLIST=${JOBLIST}','${JOBNAME}
+    Launch
+done
+}
+
+TRIMMOMATIC_launch()
+{
+# Create output directory
+outdir='Trimmed/Trimmomatic'
+mkdir -p ${outdir}
+# Initialize WAIT based on JOBLIST (empty or not)
+WAIT=`echo ${JOBLIST} | sed -e 's@_,@-hold_jid @'`
+if [ ${1} == "SE" ]; then
     # Precise to eliminate empty lists for the loop
     shopt -s nullglob
     # For each read file
-    for i in $2/*.fastq.gz $2/*.fq.gz; do
+    for i in ${2}/*.fastq.gz ${2}/*.fq.gz; do
         # Set variables for jobname
-        current_file=`echo $i | sed -e "s@$2\/@@g" | sed -e 's@\.fastq\.gz\|\.fq\.gz@@g'`
-        # Define output file
-        output=${current_file}"_Clum.fastq.gz"
-        # Launch qsub for fastq files
-        echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
-        clumpify.sh in=${i} out=${outdir}/${output} dedupe=${D_arg} subs=0" | qsub -N Clumpify_${current_file}
-        # Update REPORT
-        echo -e "Clumpify_${current_file} | clumpify.sh in=${i} out=${outdir}/${output} dedupe=${D_arg} subs=0" >> ./0K_REPORT.txt
+        current_file=`echo $i | sed -e "s@${2}\/@@g" | sed -e 's@\.fastq\.gz\|\.fq\.gz@@g'`
+        # Define JOBNAME and COMMAND and launch job
+        JOBNAME="Trim_${1}_${current_file}"
+        COMMAND="conda activate base \n\
+        conda activate Trimmomatic \n\
+        trimmomatic ${1} -threads 4 $i \
+        ${outdir}/${current_file}"_Trimmed.fastq.gz" ${I_arg}\
+        SLIDINGWINDOW:${S_arg} \
+        LEADING:${L_arg} \
+        TRAILING:${T_arg} \
+        MINLEN:${M_arg}"
+        Launch
     done
+elif [ ${1} == "PE" ]; then
+    mkdir -p ${outdir}/{Paired,Unpaired}
+    # Precise to eliminate empty lists for the loop
+    shopt -s nullglob
+    # For each read file
+    for i in ${2}/*_R1*.fastq.gz ${2}/*_R1*.fq.gz; do
+        # Define paired files
+        R1=$i
+        R2=`echo $i | sed -e 's/_R1/_R2/g'`
+        # Set variables for jobname
+        current_R1=`echo $i | sed -e "s@${2}\/@@g" | sed -e 's@\.fastq\.gz\|\.fq\.gz@@g'`
+        current_R2=`echo ${current_R1} | sed -e 's/_R1/_R2/g'`
+        current_pair=`echo ${current_R1} | sed -e 's@_R1@@g'`
+        # Define JOBNAME and COMMAND and launch job
+        JOBNAME="Trim_${1}_${current_pair}"
+        COMMAND="conda activate Trimmomatic \n\
+        trimmomatic ${1} -threads 4 $R1 $R2 \
+        ${outdir}/Paired/${current_R1}_Trimmed_Paired.fastq.gz \
+        ${outdir}/Unpaired/${current_R1}_Trimmed_Unpaired.fastq.gz \
+        ${outdir}/Paired/${current_R2}_Trimmed_Paired.fastq.gz \
+        ${outdir}/Unpaired/${current_R2}_Trimmed_Unpaired.fastq.gz ${I_arg}\
+        SLIDINGWINDOW:${S_arg} \
+        LEADING:${L_arg} \
+        TRAILING:${T_arg} \
+        MINLEN:${M_arg}"
+        Launch
+    done 
+fi
+}
+
+## LAUNCH COMMANDS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+if [ $U_arg == "Clumpify" ]; then
+    CLUMPIFY_launch $1 $2
+elif [ $U_arg == "Trimmomatic" ]; then
+    TRIMMOMATIC_launch $1 $2
 elif [ $U_arg == "Both" ]; then
-    module load bbmap
-    # Create output directory
-    outdir1='Trimmed/Clumpify'
-    mkdir -p ${outdir1}
-    outdir2='Trimmed/Trimmomatic'
-    if [ $1 == "SE" ]; then
-        # Create output directory
-        outdir1='Trimmed/Clumpify'
-        mkdir -p ${outdir1}
-        outdir2='Trimmed/Trimmomatic'
-        mkdir -p ${outdir2}
-        # Precise to eliminate empty lists for the loop
-        shopt -s nullglob
-        # For each read file
-        for i in $2/*.fastq.gz $2/*.fq.gz; do
-            # Set variables for jobname
-            current_file=`echo $i | sed -e "s@$2\/@@g" | sed -e 's@\.fastq\.gz\|\.fq\.gz@@g'`
-            # Define output files
-            output1=${current_file}"_Clum.fastq.gz"
-            output2=${current_file}"_Clum_Trimmed.fastq.gz"
-            # Launch qsub for fastq files
-            echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
-            clumpify.sh in=${i} out=${outdir1}/${output1} dedupe=${D_arg} subs=0 \n\
-            \n\
-            conda activate base \n\
-            conda activate Trimmomatic \n\
-            trimmomatic SE -threads 4 ${outdir1}/${output1} \
-            ${outdir2}/${output2} ${I_arg}\
-            SLIDINGWINDOW:${S_arg} \
-            LEADING:${L_arg} \
-            TRAILING:${T_arg} \
-            MINLEN:${M_arg}" | qsub -N ClumTrim_${1}_${current_file}
-            # Update REPORT
-            echo -e "ClumTrim_${1}_${current_file} | clumpify.sh in=${i} out=${outdir1}/${output1} dedupe=${D_arg} subs=0" >> ./0K_REPORT.txt
-            echo -e "        | trimmomatic SE -threads 4 $i ${outdir}/${output} ${I_arg}SLIDINGWINDOW:${S_arg} LEADING:${L_arg} TRAILING:${T_arg} MINLEN:${M_arg}" >> ./0K_REPORT.txt
-        done
-    elif [ $1 == "PE" ]; then
-        # Create output directory exclusive of PE
-        mkdir -p ${outdir2}/{Paired,Unpaired}
-        # Precise to eliminate empty lists for the loop
-        shopt -s nullglob
-        # For each read file
-        for i in $2/*_R1*.fastq.gz $2/*_R1*.fq.gz; do
-            # Define Clumpify input paired file
-            i_2=`echo $i | sed -e 's@_R1@_R2@g'`
-            # Define Clumpify outputs paired files
-            ClumOut1=`echo $i | sed -e "s@$2\/@@g" | sed -e 's@\.fastq\.gz\|\.fq\.gz@_Clum\.fastq\.gz@g'`
-            ClumOut2=`echo ${ClumOut1} | sed -e 's@_R1@_R2@g'`
-            # Set variables for jobname
-            current_R1=`echo ${ClumOut1} | sed -e 's@\.fastq\.gz\|\.fq\.gz@@g'`
-            current_R2=`echo ${current_R1} | sed -e 's/_R1/_R2/g'`
-            current_pair=`echo ${current_R1} | sed -e 's@_R1@@g'`
-            # Define corresponding outputs for both paired and unpaired process
-            P1=${current_R1}"_Trimmed_Paired.fastq.gz"
-            U1=${current_R1}"_Trimmed_Unpaired.fastq.gz"
-            P2=${current_R2}"_Trimmed_Paired.fastq.gz"
-            U2=${current_R2}"_Trimmed_Unpaired.fastq.gz"
-            # Launch qsub for each files
-            echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
-            clumpify.sh in=${i} out=${outdir1}/${ClumOut1} dedupe=${D_arg} subs=0 \n\
-            clumpify.sh in=${i_2} out=${outdir1}/${ClumOut2} dedupe=${D_arg} subs=0 \n\
-            \n\
-            conda activate base \n\
-            conda activate Trimmomatic \n\
-            trimmomatic PE -threads 4 ${outdir1}/${ClumOut1} ${outdir1}/${ClumOut2} \
-            ${outdir2}/Paired/${P1} ${outdir2}/Unpaired/${U1} \
-            ${outdir2}/Paired/${P2} ${outdir2}/Unpaired/${U2} ${I_arg}\
-            SLIDINGWINDOW:${S_arg} \
-            LEADING:${L_arg} \
-            TRAILING:${T_arg} \
-            MINLEN:${M_arg}" | qsub -N ClumTrim_${1}_${current_pair}
-            # Update REPORT
-            echo -e "ClumTrim_${1}_${current_file} | clumpify.sh in=${i} out=${outdir1}/${ClumOut1} dedupe=${D_arg} subs=0" >> ./0K_REPORT.txt
-            echo -e "        | clumpify.sh in=${i_2} out=${outdir1}/${ClumOut2} dedupe=${D_arg} subs=0" >> ./0K_REPORT.txt
-            echo -e "        | trimmomatic PE -threads 4 $R1 $R2 ${outdir}/Paired/${P1} ${outdir}/Unpaired/${U1} ${outdir}/Paired/${P2} ${outdir}/Unpaired/${U2} ${I_arg}SLIDINGWINDOW:${S_arg} LEADING:${L_arg} TRAILING:${T_arg} MINLEN:${M_arg}" >> ./0K_REPORT.txt
-        
-        done 
-    fi
+    CLUMPIFY_launch $1 $2
+    TRIMMOMATIC_launch $1 $2
 fi
