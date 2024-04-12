@@ -2,7 +2,7 @@
 
 This workflow was designed to perform analyzes of Bulk RNA-sequencing data, from FASTQ files to identification of differentially expressed genes.   
   
-It is deliberately not automated, and requires launching the scripts manually one after the other, keeping full user control and allowing custom options, whilst retaining some standardization and repeatability. Therefore, it is well suited to projects with a not too high number of experiments, and for users who want to perform analyzes step by step by taking the time to understand the results of one step before launching the next, and possibly change the options accordingly.  
+It is deliberately not automated, and requires launching the scripts manually one after the other, keeping full user control and allowing custom options, whilst retaining some standardization and repeatability. Therefore, it is well suited for users who want to perform analyzes step by step by taking the time to understand the results of one step before launching the next one, and possibly change the options accordingly.  
 
 Two quantification methods are available in this workflow :  
 * **STAR Raw Counts :** This method generates a count table with integer values corresponding to exact aligned read numbers for each gene. Reads are first mapped using **STAR**, then quantified using **featureCount**.
