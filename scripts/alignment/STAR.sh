@@ -106,7 +106,7 @@ if [ $1 == "SE" ]; then
         # If SE (Single-End) is selected, every files are aligned separately
         for i in $2/*.fastq.gz $2/*.fq.gz; do
                 # Define individual output filenames
-                output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/\.fastq\.gz\|\.fq\.gz//g'`
+                output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/\.fastq\.gz\|\.fq\.gz/_/g'`
 		# Define JOBNAME and COMMAND and launch job while append JOBLIST
 		JOBNAME="STAR_SE_${output}"
 		COMMAND="STAR \
@@ -129,7 +129,7 @@ elif [ $1 == "PE" ]; then
                 R1=$i
                 R2=`echo $i | sed -e 's/_R1/_R2/g'`
                 # Define unique output filename for paires
-                output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/_R1//g' | sed -e 's/\.fastq\.gz\|\.fq\.gz//g'`
+                output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/_R1//g' | sed -e 's/\.fastq\.gz\|\.fq\.gz/_/g'`
 		# Define JOBNAME and COMMAND and launch job while append JOBLIST
 		JOBNAME="STAR_PE_${output}"
 		COMMAND="STAR \
