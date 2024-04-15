@@ -77,7 +77,6 @@ fi
 
 ## SETUP - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 module load star/2.7.10b
-module load multiqc/1.13
 
 # Generate REPORT
 echo '#' >> ./0K_REPORT.txt
@@ -91,7 +90,6 @@ echo -e ${JOBNAME} >> ./0K_REPORT.txt
 echo -e ${COMMAND} |  sed 's@^@   \| @' >> ./0K_REPORT.txt
 }
 WAIT=''
-
 
 ## STAR - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Initialize JOBLIST to wait before running MultiQC
