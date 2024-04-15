@@ -77,6 +77,7 @@ fi
 
 ## SETUP - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 module load star/2.7.10b
+module load multiqc/1.13
 
 # Generate REPORT
 echo '#' >> ./0K_REPORT.txt
