@@ -61,7 +61,7 @@ elif (( !${#files} )); then
         # Error if provided directory is empty or does not exists
         echo 'Error : can not find files to align in provided directory. Please make sure the provided input directory exists, and contains .fastq.gz or .fq.gz files.'
         exit      
-elif (( !${#n_R1} )) || (( !${#n_R2} )); then
+elif [ $1 == "PE" ] && ((( !${#n_R1} )) || (( !${#n_R2} ))); then
 	# Error if PE is selected but no paired files are detected
 	echo 'Error : PE is selected but can not find R1 and R2 files. Please make sure files are Paired-End.'
         exit
