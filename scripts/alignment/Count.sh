@@ -20,21 +20,21 @@ ${BOLD}SYNTHAX${END}\n\
     sh Count.sh <SE|PE> <input_dir> <gtf_file>\n\n\
     
 ${BOLD}DESCRIPTION${END}\n\
-    Generate a count table from aligned BAM files and associated Sample_Sheet.csv file for post-processing analysis workflow.\n\
+    Generate a count table and associated Sample_Sheet.csv file from aligned BAM files for post-processing analysis workflow.\n\
     It creates a new folder './Counts' in which resulting files will be stored.\n\
     A pre-constructed Sample_Sheet.csv is created to make post-processing analyssi easier.\n\n\
     
 ${BOLD}ARGUMENTS${END}\n\
     ${BOLD}<SE|PE>${END}\n\
-        Define whether bam files were aligned by Single-End (SE) or Paired-End (PE).\n\n\
+        Define whether BAM files were aligned by Single-End (SE) or Paired-End (PE).\n\n\
     ${BOLD}<input_dir>${END}\n\
-        Directory containing previously aligned .bam files to use as input for counting.\n\
+        Directory containing previously aligned BAM files to use as input for counting.\n\
         It usually corresponds to 'STAR'.\n\n\
     ${BOLD}<gtf_file>${END}\n\
-        Path to .gtf file previously used for reference indexation.\n\n\
+        Path to GTF file previously used for reference indexation.\n\n\
 
 ${BOLD}EXAMPLE USAGE${END}\n\
-    sh Count.sh ${BOLD}PE STAR /LAB-DATA/BiRD/users/${usr}/Ref/Genome/Mus_musculus.GRCm39.108.gtf${END}\n"
+    sh ${script_name} ${BOLD}PE STAR /LAB-DATA/BiRD/users/${usr}/Ref/Genome/Mus_musculus.GRCm39.108.gtf${END}\n"
 }
 
 ################################################################################################################
@@ -54,7 +54,7 @@ elif [ $# -ne 3 ]; then
     exit
 elif (( !${#files} )); then
     # Error if provided directory is empty or does not exists
-    echo 'Error : can not find files in provided directory. Please make sure the provided directory exists, and contains .bam.'
+    echo 'Error : can not find files in provided directory. Please make sure the provided directory exists, and contains .bam files.'
     exit
 else
     # Error if the correct number of arguments is provided but the first does not match 'SE' or 'PE'
@@ -72,36 +72,49 @@ fi
 ### SCRIPT -----------------------------------------------------------------------------------------------------
 ################################################################################################################
 
+## SETUP - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 module load subread/2.0.1
+
 
 # Generate REPORT
 echo '#' >> ./0K_REPORT.txt
 date >> ./0K_REPORT.txt
 
-# Create directory in QC folder following the same path than input path provided
-mkdir -p ./Counts
-echo "Sample,File,Group,Sex" > Counts/Sample_Sheet.csv
+Launch()
+{
+# Launch COMMAND and save report
+echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n"${COMMAND} | qsub -N ${JOBNAME} ${WAIT}
+echo -e ${JOBNAME} >> ./0K_REPORT.txt
+echo -e ${COMMAND} |  sed 's@^@   \| @' >> ./0K_REPORT.txt
+}
+WAIT=''
+
+## FEATURE COUNT - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Create output directory
+outdir='Counts'
+mkdir -p ${outdir}
+
+# Initialize Sample Sheet
+echo "Sample,File,Group,Sex" > ${outdir}/Sample_Sheet.csv
 
 if [ $1 == "SE" ]; then
-    # Launch FastQC for each provided file
-    echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
-    featureCounts -a $3 \
-    -o Counts/Count_Table.out \
-    -T 8 $2/*.bam" | qsub -N Count_SE
-    # Update REPORT
-    echo -e "Count_SE | featureCounts -a $3 -o Counts/Count_Table.out -T 8 $2/*.bam" >> ./0K_REPORT.txt
+    # Define JOBNAME and COMMAND and launch job
+    JOBNAME="Count_SE"
+    COMMAND="featureCounts -a $3 \
+    -o ${outdir}/Count_Table.out \
+    -T 8 $2/*.bam" 
+    Launch
 elif [ $1 == "PE" ]; then
-    # Launch FastQC for each provided file
-    echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n\
-    featureCounts -a $3 \
+    # Define JOBNAME and COMMAND and launch job
+    JOBNAME="Counte_PE"
+    COMMAND="featureCounts -a $3 \
     -o Counts/Count_Table.out \
-    -T 8 $2/*.bam -p" | qsub -N Count_PE
-    # Update REPORT
-    echo -e "Count_PE | featureCounts -a $3 -o Counts/Count_Table.out -T 8 $2/*.bam -p" >> ./0K_REPORT.txt
+    -T 8 $2/*.bam -p" 
+    Launch
 fi
 
 # Generating Sample Sheet
 for file in $2/*.bam; do
     current_file=`echo ${file} | sed -e 's@.*/@@g'`
-    echo ",${current_file},," >> Counts/Sample_Sheet.csv
+    echo ",${current_file},," >> ${outdir}/Sample_Sheet.csv
 done
