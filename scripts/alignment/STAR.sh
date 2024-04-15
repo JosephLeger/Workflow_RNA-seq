@@ -44,8 +44,10 @@ ${BOLD}EXAMPLE USAGE${END}\n\
 ### ERRORS -----------------------------------------------------------------------------------------------------
 ################################################################################################################
 
-# Count .fastq.gz pr .fq.gz files in provided directory
+# Count .fastq.gz pr .fq.gz files in provided directory and look for paired files
 files=$(shopt -s nullglob dotglob; echo $2/*.fastq.gz $2/*.fq.gz)
+n_R1=$(shopt -s nullglob dotglob; echo $2/*_R1*.fastq.gz $2/*_R1*.fq.gz)
+n_R2=$(shopt -s nullglob dotglob; echo $2/*_R2*.fastq.gz $2/*_R2*.fq.gz)
 
 if [ $# -eq 1 ] && [ $1 == "help" ]; then
         Help
@@ -59,6 +61,10 @@ elif (( !${#files} )); then
         # Error if provided directory is empty or does not exists
         echo 'Error : can not find files to align in provided directory. Please make sure the provided input directory exists, and contains .fastq.gz or .fq.gz files.'
         exit      
+elif (( !${#n_R1} )) || (( !${#n_R2} )); then
+	# Error if PE is selected but no paired files are detected
+	echo 'Error : PE is selected but can not find R1 and R2 files. Please make sure files are Paired-End.'
+        exit
 else
         # Error if the correct number of arguments is provided but the first does not match 'SE' or 'PE'
         case $1 in
