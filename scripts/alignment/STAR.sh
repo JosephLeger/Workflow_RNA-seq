@@ -44,7 +44,7 @@ ${BOLD}EXAMPLE USAGE${END}\n\
 ### ERRORS -----------------------------------------------------------------------------------------------------
 ################################################################################################################
 
-# Count .fastq.gz pr .fq.gz files in provided directory and look for paired files
+# Count .fastq.gz or .fq.gz files in provided directory and look for paired files
 files=$(shopt -s nullglob dotglob; echo $2/*.fastq.gz $2/*.fq.gz)
 n_R1=$(shopt -s nullglob dotglob; echo $2/*_R1*.fastq.gz $2/*_R1*.fq.gz)
 n_R2=$(shopt -s nullglob dotglob; echo $2/*_R2*.fastq.gz $2/*_R2*.fq.gz)
