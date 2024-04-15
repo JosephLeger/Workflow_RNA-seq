@@ -23,12 +23,12 @@ ${BOLD}DESCRIPTION${END}\n\
     Perform transcriptome alignement and transcript quantification of paired or unpaired fastq files using RSEM.\n\
     It creates a new folder './RSEM' in which aligned BAM files and outputs are stored.\n\
     A pre-filled SampleSheet in CSV format is generated in parallel.\n\n\
-
+    
 ${BOLD}OPTIONS${END}\n\
-    ${BOLD}-B${END} ${UDL}boolean${END}, ${BOLD}B${END}amGeneration\n\
-        Define whether tp generate output BAM files. \n\
-        Default = 'True'\n\n\
-        
+    ${BOLD}-B${END} ${UDL}boolean${END}, ${BOLD}B${END}amOutput\n\
+        Define whether STAR genome-mapped  output BAM files have to been generated. \n\
+        Default = True\n\n\
+
 ${BOLD}ARGUMENTS${END}\n\
     ${BOLD}<SE|PE>${END}\n\
         Define whether FASTQ files are Single-End (SE) or Paired-End (PE).\n\
@@ -55,7 +55,7 @@ B_arg='True'
 # Change default values if another one is precised
 while getopts ":B:" option; do
     case $option in
-        B) # BAM GENERATION
+        B) # BAM OUTPUT FILES
             B_arg=${OPTARG};;
         \?) # Error
             echo "Error : invalid option"
@@ -65,9 +65,10 @@ while getopts ":B:" option; do
     esac
 done
 
+# Checking if provided option values are correct
 case $B_arg in
     True|true|TRUE|T|t) 
-        B_arg='--output-genome-bam --sort-bam-by-coordinate';;
+        B_arg='--output-genome-bam ';;
     False|false|FALSE|F|f) 
         B_arg='';;
     *)
@@ -82,8 +83,10 @@ shift $((OPTIND-1))
 ### ERRORS -----------------------------------------------------------------------------------------------------
 ################################################################################################################
 
-# Count .fastq.gz pr .fq.gz files in provided directory
+# Count .fastq.gz pr .fq.gz files in provided directory and look for paired files
 files=$(shopt -s nullglob dotglob; echo $2/*.fastq.gz $2/*.fq.gz)
+n_R1=$(shopt -s nullglob dotglob; echo $2/*_R1*.fastq.gz $2/*_R1*.fq.gz)
+n_R2=$(shopt -s nullglob dotglob; echo $2/*_R2*.fastq.gz $2/*_R2*.fq.gz)
 
 if [ $# -eq 1 ] && [ $1 == "help" ]; then
         Help
@@ -97,6 +100,10 @@ elif (( !${#files} )); then
     # Error if provided directory is empty or does not exists
     echo 'Error : can not find files to align in provided directory. Please make sure the provided input directory exists, and contains .fastq.gz or .fq.gz files.'
     exit
+elif (( !${#n_R1} )) || (( !${#n_R2} )); then
+	# Error if PE is selected but no paired files are detected
+	echo 'Error : PE is selected but can not find R1 and R2 files. Please make sure files are Paired-End.'
+        exit
 else
     # Error if the correct number of arguments is provided but the first does not match 'SE' or 'PE'
     case $1 in
@@ -113,8 +120,10 @@ fi
 ### SCRIPT -----------------------------------------------------------------------------------------------------
 ################################################################################################################
 
+## SETUP - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 module load rsem/1.3.2
 module load star/2.7.5a
+module load multiqc/1.13
 
 # Generate REPORT
 echo '#' >> ./0K_REPORT.txt
@@ -123,16 +132,22 @@ date >> ./0K_REPORT.txt
 Launch()
 {
 # Launch COMMAND and save report
-echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n"${COMMAND} | qsub -N ${JOB}
-echo -e ${JOBNAME}' | '${COMMAND} >> ./0K_REPORT.txt
+echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n"${COMMAND} | qsub -N ${JOBNAME} ${WAIT}
+echo -e ${JOBNAME} >> ./0K_REPORT.txt
+echo -e ${COMMAND} |  sed 's@^@   \| @' >> ./0K_REPORT.txt
 }
+WAIT=''
 
+## RSEM - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Create RSEM directory for outputs
 outdir='./RSEM'
 mkdir -p ${outdir}
 
 # Initialize SampleSheet
 echo "FileName,SampleName,CellType,Batch" > ${outdir}/SampleSheet_Bulk_RNA.csv
+
+# Initialize JOBLIST to wait before running MultiQC
+JOBLIST='_'
 
 if [ $1 == "SE" ]; then
     # Precise to eliminate empty lists for the loop
@@ -142,9 +157,10 @@ if [ $1 == "SE" ]; then
         # Define individual output filenames
         output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/\.fastq\.gz\|\.fq\.gz//g'`
 
-        # Define JOB and COMMAND and launch job
-        JOB=RSEM_${1}_${output}
-        COMMAND="rsem-calculate-expression -p 8 --star --star-gzipped-read-file $i $3 ${outdir}/${output} ${B_arg}"
+        # Define JOBNAME and COMMAND and launch job while append JOBLIST
+        JOBNAME=RSEM_${1}_${output}
+        COMMAND="rsem-calculate-expression -p 8 --star --star-gzipped-read-file $i $3 ${outdir}/${output} ${B_arg}--sort-bam-by-coordinate"
+	JOBLIST=${JOBLIST}','${JOBNAME}
         Launch
         # Append SampleSheet
         echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv       
@@ -160,12 +176,25 @@ elif [ $1 == "PE" ]; then
         # Define unique output filename for paires
         output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/_R1//g' | sed -e 's/\.fastq\.gz\|\.fq\.gz//g'`
         
-        JOB="RSEM_${1}_${output}"
-        COMMAND="rsem-calculate-expression -p 8 --paired-end --star --star-gzipped-read-file $R1 $R2 $3 ${outdir}/${output} ${B_arg}"
+	# Define JOBNAME and COMMAND and launch job while append JOBLIST
+        JOBNAME="RSEM_${1}_${output}"
+        COMMAND="rsem-calculate-expression -p 8 --paired-end --star --star-gzipped-read-file $R1 $R2 $3 ${outdir}/${output} ${B_arg}--sort-bam-by-coordinate"
+	JOBLIST=${JOBLIST}','${JOBNAME}
         Launch
         # Append SampleSheet
         echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv
     done   
 fi
 
+## MULTIQC - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Create directory in QC folder for MultiQC
+outdir2='./QC/MultiQC'
+mkdir -p ${outdir2}
+# Create output name without strating 'QC/' and replacing '/' by '_'
+name=`echo ${outdir} | sed -e 's@\/@_@g'`
 
+## Define JOBNAME, COMMAND and launch with WAIT list
+JOBNAME="MultiQC_RSEM"
+COMMAND="multiqc ${outdir} -o ${outdir2} -n RSEM_MultiQC"
+WAIT=`echo ${JOBLIST} | sed -e 's@_,@-hold_jid @'`
+Launch
