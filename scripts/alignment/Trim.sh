@@ -139,8 +139,11 @@ shift $((OPTIND-1))
 ### ERRORS -----------------------------------------------------------------------------------------------------
 ################################################################################################################
 
-# Count .fastq.gz or .fq.gz files in provided directory
+# Count .fastq.gz or .fq.gz files in provided directory and look for paired files
 files=$(shopt -s nullglob dotglob; echo $2/*.fastq.gz $2/*.fq.gz)
+n_R1=$(shopt -s nullglob dotglob; echo $2/*_R1*.fastq.gz $2/*_R1*.fq.gz)
+n_R2=$(shopt -s nullglob dotglob; echo $2/*_R2*.fastq.gz $2/*_R2*.fq.gz)
+
 # Check format of I_arg if provided
 adapters=$(shopt -s nullglob dotglob; echo $I_arg | grep -e '.*\.fa:.*:.*:.*')
 
@@ -156,6 +159,10 @@ elif (( !${#files} )); then
     # Error if provided directory is empty or does not exists
     echo 'Error : can not find files in provided directory. Please make sure the provided directory exists, and contains .fastq.gz or .fq.gz files.'
     exit
+elif [ $1 == "PE" ] && ((( !${#n_R1} )) || (( !${#n_R2} ))); then
+	# Error if PE is selected but no paired files are detected
+	echo 'Error : PE is selected but can not find R1 and R2 files. Please make sure files are Paired-End.'
+        exit
 elif ([ $U_arg == "Trimmomatic" ] || [ $U_arg == "Both" ]) && [ -n "$I_arg" ] && (( !${#adapters} )); then
     # Error if I_arg is precised but does not respect format
     echo "Error : invalid -I option format provided. For more details, please enter"
