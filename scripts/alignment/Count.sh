@@ -58,7 +58,7 @@ elif (( !${#files} )); then
     # Error if provided directory is empty or does not exists
     echo 'Error : can not find files in provided directory. Please make sure the provided directory exists, and contains .bam files.'
     exit
-elif (( !${#n_R1} )) || (( !${#n_R2} )); then
+elif [ $1 == "PE" ] && ((( !${#n_R1} )) || (( !${#n_R2} ))); then
 	# Error if PE is selected but no paired files are detected
 	echo 'Error : PE is selected but can not find R1 and R2 files. Please make sure files are Paired-End.'
         exit
