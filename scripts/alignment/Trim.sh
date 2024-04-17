@@ -163,7 +163,7 @@ elif [ $1 == "PE" ] && [[ $(ls $2/*_R1*.fastq.gz $2/*_R1*.fq.gz 2>/dev/null | wc
 	# Error if PE is selected but no paired files are detected
 	echo 'Error : PE is selected but can not find R1 and R2 files for each pair. Please make sure files are Paired-End.'
 	exit
-elif ([ $U_arg == "Trimmomatic" ] || [ $U_arg == "Both" ]) && [ -n "$I_arg" ] && (( !${#adapters} )); then
+elif ([ $U_arg == "Trimmomatic" ] || [ $U_arg == "Both" ]) && [ -n "$I_arg" ] && [[ ! ${I_arg} =~ ^.*\.fa:.*:.*: ]]; then
 	# Error if I_arg is precised but does not respect format
 	echo "Error : invalid -I option format provided. For more details, please enter"
 	echo "      sh ${script_name} help"
