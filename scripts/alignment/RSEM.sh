@@ -83,11 +83,6 @@ shift $((OPTIND-1))
 ### ERRORS -----------------------------------------------------------------------------------------------------
 ################################################################################################################
 
-# Count .fastq.gz or .fq.gz files in provided directory and look for paired files
-files=$(shopt -s nullglob dotglob; echo $2/*.fastq.gz $2/*.fq.gz)
-n_R1=$(shopt -s nullglob dotglob; echo $2/*_R1*.fastq.gz $2/*_R1*.fq.gz)
-n_R2=$(shopt -s nullglob dotglob; echo $2/*_R2*.fastq.gz $2/*_R2*.fq.gz)
-
 if [ $# -eq 1 ] && [ $1 == "help" ]; then
         Help
         exit
@@ -96,13 +91,13 @@ elif [ $# -ne 3 ]; then
     echo "Error synthax : please use following synthax"
     echo "          sh ${script_name} <SE|PE> <input_dir> <refindex>"
     exit
-elif (( !${#files} )); then
+elif [ $(ls $2/*.fastq.gz $2/*.fq.gz 2>/dev/null | wc -l) -lt 1 ]; then
     # Error if provided directory is empty or does not exists
     echo 'Error : can not find files to align in provided directory. Please make sure the provided input directory exists, and contains .fastq.gz or .fq.gz files.'
     exit
-elif [ $1 == "PE" ] && ((( !${#n_R1} )) || (( !${#n_R2} ))); then
+elif [ $1 == "PE" ] && [[ $(ls $2/*_R1*.fastq.gz $2/*_R1*.fq.gz 2>/dev/null | wc -l) -eq 0 || $(ls $2/*_R1*.fastq.gz $2/*_R1*.fq.gz 2>/dev/null | wc -l) -ne $(ls $2/*_R2*.fastq.gz $2/*_R2*.fq.gz 2>/dev/null | wc -l) ]]; then
 	# Error if PE is selected but no paired files are detected
-	echo 'Error : PE is selected but can not find R1 and R2 files. Please make sure files are Paired-End.'
+	echo 'Error : PE is selected but can not find R1 and R2 files for each pair. Please make sure files are Paired-End.'
         exit
 else
     # Error if the correct number of arguments is provided but the first does not match 'SE' or 'PE'
