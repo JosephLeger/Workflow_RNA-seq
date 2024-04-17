@@ -17,37 +17,31 @@ Help()
 {
 echo -e "${BOLD}####### STAR MANUAL #######${END}\n\n\
 ${BOLD}SYNTHAX${END}\n\
-    sh STAR.sh <SE|PE> <input_dir> <refindex>\n\n\
+	sh STAR.sh <SE|PE> <input_dir> <refindex>\n\n\
     
 ${BOLD}DESCRIPTION${END}\n\
-    Perform genome alignement of paired or unpaired fastq files using STAR.\n\
-    It creates a new folder './STAR' in which aligned BAM files and outputs are stored.\n\
-    After alignment, a MultiQC report is generated in '.QC/MultiQC' to summarize information about resulting files.\n\n\
+	Perform genome alignement of paired or unpaired fastq files using STAR.\n\
+	After alignment, a MultiQC report is generated in '.QC/MultiQC' to summarize information about resulting files.\n\n\
     
 ${BOLD}ARGUMENTS${END}\n\
-    ${BOLD}<SE|PE>${END}\n\
-        Define whether fastq files are Single-End (SE) or Paired-End (PE).\n\
-        If SE is provided, each file is aligned individually and give rise to an output file stored in ./STAR directory.\n\
-        If PE is provided, files are aligned in pair (R1 and R2), giving rise to a single output files from a pair of input files.\n\n\
-    ${BOLD}<input_dir>${END}\n\
-        Directory containing .fastq.gz or .fq.gz files to use as input for alignment.\n\
-        It usually corresponds to 'Raw' or 'Trimmed'.\n\n\
-    ${BOLD}<refindex>${END}\n\
-        Path to reference previously indexed using STAR genomeGenerate.\n\
-        Provided path must be ended by generated GenomDir folder.\n\n\
-
+	${BOLD}<SE|PE>${END}\n\
+		Define whether fastq files are Single-End (SE) or Paired-End (PE).\n\
+  		If SE is provided, each file is aligned individually and give rise to an output file stored in ./STAR directory.\n\
+		If PE is provided, files are aligned in pair (R1 and R2), giving rise to a single output files from a pair of input files.\n\n\
+	${BOLD}<input_dir>${END}\n\
+		Directory containing .fastq.gz or .fq.gz files to use as input for alignment.\n\
+        	It usually corresponds to 'Raw' or 'Trimmed'.\n\n\
+	${BOLD}<refindex>${END}\n\
+        	Path to reference previously indexed using STAR genomeGenerate.\n\
+        	Provided path must be ended by generated GenomDir folder.\n\n\
+	 
 ${BOLD}EXAMPLE USAGE${END}\n\
-    sh ${script_name} ${BOLD}PE Trimmed/Trimmomatic/Paired ${usr}/Ref/refdata-STAR-mm39.108/GenomeDir${END}\n"
+	sh ${script_name} ${BOLD}PE Trimmed/Trimmomatic/Paired ${usr}/Ref/refdata-STAR-mm39.108/GenomeDir${END}\n"
 }
 
 ################################################################################################################
 ### ERRORS -----------------------------------------------------------------------------------------------------
 ################################################################################################################
-
-# Count .fastq.gz or .fq.gz files in provided directory and look for paired files
-files=$(shopt -s nullglob dotglob; echo $2/*.fastq.gz $2/*.fq.gz)
-n_R1=$(shopt -s nullglob dotglob; echo $2/*_R1*.fastq.gz $2/*_R1*.fq.gz)
-n_R2=$(shopt -s nullglob dotglob; echo $2/*_R2*.fastq.gz $2/*_R2*.fq.gz)
 
 if [ $# -eq 1 ] && [ $1 == "help" ]; then
         Help
@@ -57,19 +51,19 @@ elif [ $# -ne 3 ]; then
         echo "Error synthax : please use following synthax"
         echo "          sh ${script_name} <SE|PE> <input_dir> <refindex>"
         exit
-elif (( !${#files} )); then
-        # Error if provided directory is empty or does not exists
-        echo 'Error : can not find files to align in provided directory. Please make sure the provided input directory exists, and contains .fastq.gz or .fq.gz files.'
-        exit      
-elif [ $1 == "PE" ] && ((( !${#n_R1} )) || (( !${#n_R2} ))); then
+elif [ $(ls $2/*.fastq.gz $2/*.fq.gz 2>/dev/null | wc -l) -lt 1 ]; then
+    	# Error if provided directory is empty or does not exists
+    	echo 'Error : can not find files to align in provided directory. Please make sure the provided input directory exists, and contains .fastq.gz or .fq.gz files.'
+    	exit
+elif [ $1 == "PE" ] && [[ $(ls $2/*_R1*.fastq.gz $2/*_R1*.fq.gz 2>/dev/null | wc -l) -eq 0 || $(ls $2/*_R1*.fastq.gz $2/*_R1*.fq.gz 2>/dev/null | wc -l) -ne $(ls $2/*_R2*.fastq.gz $2/*_R2*.fq.gz 2>/dev/null | wc -l) ]]; then
 	# Error if PE is selected but no paired files are detected
-	echo 'Error : PE is selected but can not find R1 and R2 files. Please make sure files are Paired-End.'
+	echo 'Error : PE is selected but can not find R1 and R2 files for each pair. Please make sure files are Paired-End.'
         exit
 else
         # Error if the correct number of arguments is provided but the first does not match 'SE' or 'PE'
         case $1 in
-                PE|SE) 
-                        ;;
+		PE|SE) 
+			;;
                 *) 
                         echo "Error synthax : please use following synthax"
                         echo "          sh ${script_name} <SE|PE> <input_dir> <refindex>"
