@@ -70,7 +70,7 @@ case $B_arg in
     True|true|TRUE|T|t) 
         B_arg='--output-genome-bam ';;
     False|false|FALSE|F|f) 
-        B_arg='';;
+        B_arg='--no-bam-output ';;
     *)
         echo "Error value : -B argument must be 'true' or 'false'"
         exit;;
