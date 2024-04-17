@@ -17,61 +17,56 @@ Help()
 {
 echo -e "${BOLD}####### COUNT MANUAL #######${END}\n\n\
 ${BOLD}SYNTHAX${END}\n\
-    sh Count.sh <SE|PE> <input_dir> <gtf_file>\n\n\
+	sh Count.sh <SE|PE> <input_dir> <gtf_file>\n\n\
     
 ${BOLD}DESCRIPTION${END}\n\
-    Generate a count table and associated Sample_Sheet.csv file from aligned BAM files for post-processing analysis workflow.\n\
-    It creates a new folder './Counts' in which resulting files will be stored.\n\
-    A pre-constructed Sample_Sheet.csv is created to make post-processing analyssi easier.\n\n\
+	Generate a count table and associated Sample_Sheet.csv file from aligned BAM files for post-processing analysis workflow.\n\
+	It creates a new folder './Counts' in which resulting files will be stored.\n\
+	A pre-constructed Sample_Sheet.csv is created to make post-processing analyssi easier.\n\n\
     
 ${BOLD}ARGUMENTS${END}\n\
-    ${BOLD}<SE|PE>${END}\n\
-        Define whether BAM files were aligned by Single-End (SE) or Paired-End (PE).\n\n\
-    ${BOLD}<input_dir>${END}\n\
-        Directory containing previously aligned BAM files to use as input for counting.\n\
-        It usually corresponds to 'STAR'.\n\n\
-    ${BOLD}<gtf_file>${END}\n\
-        Path to GTF file previously used for reference indexation.\n\n\
+	${BOLD}<SE|PE>${END}\n\
+		Define whether BAM files were aligned by Single-End (SE) or Paired-End (PE).\n\n\
+	${BOLD}<input_dir>${END}\n\
+		Directory containing previously aligned BAM files to use as input for counting.\n\
+		It usually corresponds to 'STAR'.\n\n\
+	${BOLD}<gtf_file>${END}\n\
+		Path to GTF file previously used for reference indexation.\n\n\
 
 ${BOLD}EXAMPLE USAGE${END}\n\
-    sh ${script_name} ${BOLD}PE STAR /LAB-DATA/BiRD/users/${usr}/Ref/Genome/Mus_musculus.GRCm39.108.gtf${END}\n"
+	sh ${script_name} ${BOLD}PE STAR /LAB-DATA/BiRD/users/${usr}/Ref/Genome/Mus_musculus.GRCm39.108.gtf${END}\n"
 }
 
 ################################################################################################################
 ### ERRORS -----------------------------------------------------------------------------------------------------
 ################################################################################################################
 
-# Count .fastq.gz or .fq.gz files in provided directory and look for paired files
-files=$(shopt -s nullglob dotglob; echo $2/*.bam)
-n_R1=$(shopt -s nullglob dotglob; echo $2/*_R1*.bam)
-n_R2=$(shopt -s nullglob dotglob; echo $2/*_R2*.bam)
-
 if [ $# -eq 1 ] && [ $1 == "help" ]; then
-    Help
-    exit
+	Help
+	exit
 elif [ $# -ne 3 ]; then
-    # Error if inoccrect number of agruments is provided
-    echo "Error synthax : please use following synthax"
-    echo "      sh ${script_name} <SE|PE> <input_dir> <gtf_file>"
-    exit
-elif (( !${#files} )); then
-    # Error if provided directory is empty or does not exists
-    echo 'Error : can not find files in provided directory. Please make sure the provided directory exists, and contains .bam files.'
-    exit
-elif [ $1 == "PE" ] && ((( !${#n_R1} )) || (( !${#n_R2} ))); then
+	# Error if inoccrect number of agruments is provided
+	echo "Error synthax : please use following synthax"
+	echo "      sh ${script_name} <SE|PE> <input_dir> <gtf_file>"
+	exit
+elif [ $(ls $2/*.bam 2>/dev/null | wc -l) -lt 1 ]; then
+	# Error if provided directory is empty or does not exists
+	echo 'Error : can not find files to align in provided directory. Please make sure the provided input directory exists, and contains .fastq.gz or .fq.gz files.'
+	exit
+elif [ $1 == "PE" ] && [[ $(ls $2/*_R1*.bam 2>/dev/null | wc -l) -eq 0 || $(ls $2/*_R1*.bam 2>/dev/null | wc -l) -ne $(ls $2/*_R2*.bam 2>/dev/null | wc -l) ]]; then
 	# Error if PE is selected but no paired files are detected
-	echo 'Error : PE is selected but can not find R1 and R2 files. Please make sure files are Paired-End.'
-        exit
+	echo 'Error : PE is selected but can not find R1 and R2 files for each pair. Please make sure files are Paired-End.'
+	exit
 else
-    # Error if the correct number of arguments is provided but the first does not match 'SE' or 'PE'
-    case $1 in
-        PE|SE) 
-            ;;
-        *) 
-            echo "Error Synthax : please use following synthax"
-            echo "      sh ${script_name} <SE|PE> <input_dir> <gtf_file>" 
-            exit;;
-    esac
+	# Error if the correct number of arguments is provided but the first does not match 'SE' or 'PE'
+	case $1 in
+		PE|SE) 
+			;;
+		*) 
+			echo "Error Synthax : please use following synthax"
+			echo "      sh ${script_name} <SE|PE> <input_dir> <gtf_file>" 
+			exit;;
+	esac
 fi
 
 ################################################################################################################
@@ -104,23 +99,23 @@ mkdir -p ${outdir}
 echo "Sample,File,Group,Sex" > ${outdir}/Sample_Sheet.csv
 
 if [ $1 == "SE" ]; then
-    # Define JOBNAME and COMMAND and launch job
-    JOBNAME="Count_SE"
-    COMMAND="featureCounts -a $3 \
-    -o ${outdir}/Count_Table.out \
-    -T 8 $2/*.bam" 
-    Launch
+	# Define JOBNAME and COMMAND and launch job
+	JOBNAME="Count_SE"
+	COMMAND="featureCounts -a $3 \
+	-o ${outdir}/Count_Table.out \
+	-T 8 $2/*.bam" 
+	Launch
 elif [ $1 == "PE" ]; then
-    # Define JOBNAME and COMMAND and launch job
-    JOBNAME="Counte_PE"
-    COMMAND="featureCounts -a $3 \
-    -o Counts/Count_Table.out \
-    -T 8 $2/*.bam -p" 
-    Launch
+	# Define JOBNAME and COMMAND and launch job
+	JOBNAME="Counte_PE"
+	COMMAND="featureCounts -a $3 \
+	-o Counts/Count_Table.out \
+	-T 8 $2/*.bam -p" 
+	Launch
 fi
 
 # Generating Sample Sheet
 for file in $2/*.bam; do
-    current_file=`echo ${file} | sed -e 's@.*/@@g'`
-    echo ",${current_file},," >> ${outdir}/Sample_Sheet.csv
+	current_file=`echo ${file} | sed -e 's@.*/@@g'`
+	echo ",${current_file},," >> ${outdir}/Sample_Sheet.csv
 done
