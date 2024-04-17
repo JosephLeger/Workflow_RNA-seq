@@ -53,10 +53,6 @@ elif [ $(ls $2/*.bam 2>/dev/null | wc -l) -lt 1 ]; then
 	# Error if provided directory is empty or does not exists
 	echo 'Error : can not find files to align in provided directory. Please make sure the provided input directory exists, and contains .fastq.gz or .fq.gz files.'
 	exit
-elif [ $1 == "PE" ] && [[ $(ls $2/*_R1*.bam 2>/dev/null | wc -l) -eq 0 || $(ls $2/*_R1*.bam 2>/dev/null | wc -l) -ne $(ls $2/*_R2*.bam 2>/dev/null | wc -l) ]]; then
-	# Error if PE is selected but no paired files are detected
-	echo 'Error : PE is selected but can not find R1 and R2 files for each pair. Please make sure files are Paired-End.'
-	exit
 else
 	# Error if the correct number of arguments is provided but the first does not match 'SE' or 'PE'
 	case $1 in
