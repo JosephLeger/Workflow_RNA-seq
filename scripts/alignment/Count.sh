@@ -34,7 +34,7 @@ ${BOLD}ARGUMENTS${END}\n\
 		Path to GTF file previously used for reference indexation.\n\n\
 
 ${BOLD}EXAMPLE USAGE${END}\n\
-	sh ${script_name} ${BOLD}PE STAR /LAB-DATA/BiRD/users/${usr}/Ref/Genome/Mus_musculus.GRCm39.108.gtf${END}\n"
+	sh ${script_name} ${BOLD}PE STAR ${usr}/Ref/Genome/Mus_musculus.GRCm39.108.gtf${END}\n"
 }
 
 ################################################################################################################
