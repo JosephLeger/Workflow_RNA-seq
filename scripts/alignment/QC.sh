@@ -18,53 +18,48 @@ Help()
 {
 echo -e "${BOLD}####### QC MANUAL #######${END}\n\n\
 ${BOLD}SYNTHAX${END}\n\
-        sh ${script_name} <input_dir1> <...>\n\n\
+	sh ${script_name} <input_dir1> <...>\n\n\
 
 ${BOLD}DESCRIPTION${END}\n\
-        Perform quality check of FASTQ files using FastQC and merge results into a single file using MultiQC.\n\
-        It creates new folders './QC/<input_dir>' and './QC/MultiQC' in which quality check results are stored.\n\
-        Output files are .html files for direct visualization and .zip files containing results.\n\n\
+	Perform quality check of FASTQ files using FastQC and merge results into a single file using MultiQC.\n\
+	It creates new folders './QC/<input_dir>' and './QC/MultiQC' in which quality check results are stored.\n\
+	Output files are .html files for direct visualization and .zip files containing results.\n\n\
 
 ${BOLD}ARGUMENTS${END}\n\
-        ${BOLD}<input_dir1>${END}\n\
-                Directory containing .fastq.gz or .fq.gz files to use as input for QC.\n\n\
-        ${BOLD}<...>${END}\n\
-                Several directories can be specified as argument in the same command line.\n\n\
+	${BOLD}<input_dir1>${END}\n\
+		Directory containing .fastq.gz or .fq.gz files to use as input for QC.\n\n\
+	${BOLD}<...>${END}\n\
+		Several directories can be specified as argument in the same command line.\n\n\
                 
 ${BOLD}EXAMPLE USAGE${END}\n\
-        sh ${script_name} ${BOLD}Raw${END}\n"
+	sh ${script_name} ${BOLD}Raw${END}\n"
 }
 
 ################################################################################################################
 ### ERRORS -----------------------------------------------------------------------------------------------------
 ################################################################################################################
 
-# Count .fastq.gz or .fq.gz files in provided directory
-files=$(shopt -s nullglob dotglob; echo $1/*.fastq.gz $1/*.fq.gz)
-
 if [ $# -eq 1 ] && [ $1 == "help" ]; then
-        Help
-        exit
+	Help
+	exit
 elif [ $# -lt 1 ]; then
-        # Error if inoccrect number of agruments is provided
-        echo "Error synthax : please use following synthax"
-        echo "          sh ${script_name} <input_dir1> <...>"
-        exit
+	# Error if inoccrect number of agruments is provided
+	echo "Error synthax : please use following synthax"
+	echo "          sh ${script_name} <input_dir1> <...>"
+	exit
 else
-        input_list=''
-        # For each input file given as argument
-        for input in "$@"; do
-                # Precise to eliminate empty lists for the loop
-                shopt -s nullglob
-                for i in ${input}/*.fastq.gz ${input}/*.fq.gz; do
-                        input_list=${input_list}${i}' '
-                done
-        done
-        if (( !${#input_list} )); then
-                # Error if current provided directories are all empty
-                echo -e "Error : can not find any file in provided directories. Please make sure the provided input directories exist, and contain .fastq.gz or .fq.gz files."
-                exit
-        fi
+	# Error if all provided directories are empty or don't exist
+ 	if [ $(ls $@/*.fastq.gz $@/*.fq.gz 2>/dev/null | wc -l) -lt 1 ]; then		
+ 		echo -e "Error : can not find any file in provided directories. Please make sure the provided input directories exist, and contain .fastq.gz or .fq.gz files."
+		exit
+	fi
+ 
+	# Warning if some provided directories are empty or don't exist
+	for input in "$@"; do
+ 		if [ $(ls ${input}/*.fastq.gz ${input}/*.fq.gz 2>/dev/null | wc -l) -lt 1 ]; then
+   			echo -e "Warning : can not find files in ${input} directory."
+		fi
+	done
 fi
 
 ################################################################################################################
@@ -94,23 +89,23 @@ JOBLIST='_'
 
 # For each input file given as argument
 for input in "$@"; do
-        # Create directory in QC folder following the same path than input path provided
-        outdir=QC/${input}
-        mkdir -p ${outdir}
-        # Generate jobname replacing '/' by '_'
-        name=`echo ${input} | sed -e 's@\/@_@g'`
-        # Precise to eliminate empty lists for the loop
-        shopt -s nullglob
-        # Launch FastQC for each provided file
-        for i in ${input}/*.fastq.gz ${input}/*.fq.gz; do
-                # Set variables for jobname
-                current_file=`echo $i | sed -e "s@${input}\/@@g" | sed -e "s@\.fastq\.gz\|\.fq\.gz@@g"`
-                # Define JOBNAME and COMMAND and launch job while append JOBLIST
-                JOBNAME="QC_${name}_${current_file}"
-                COMMAND="fastqc -o ${outdir} --noextract -f fastq $i"
+	# Create directory in QC folder following the same path than input path provided
+	outdir=QC/${input}
+	mkdir -p ${outdir}
+	# Generate jobname replacing '/' by '_'
+	name=`echo ${input} | sed -e 's@\/@_@g'`
+	# Precise to eliminate empty lists for the loop
+	shopt -s nullglob
+	# Launch FastQC for each provided file
+	for i in ${input}/*.fastq.gz ${input}/*.fq.gz; do
+		# Set variables for jobname
+		current_file=`echo $i | sed -e "s@${input}\/@@g" | sed -e "s@\.fastq\.gz\|\.fq\.gz@@g"`
+		# Define JOBNAME and COMMAND and launch job while append JOBLIST
+		JOBNAME="QC_${name}_${current_file}"
+		COMMAND="fastqc -o ${outdir} --noextract -f fastq $i"
 		JOBLIST=${JOBLIST}','${JOBNAME}
-                Launch
-        done
+		Launch
+	done
 done
 
 ## MULTIQC - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
