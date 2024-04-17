@@ -103,7 +103,7 @@ if [ $1 == "SE" ]; then
 	Launch
 elif [ $1 == "PE" ]; then
 	# Define JOBNAME and COMMAND and launch job
-	JOBNAME="Counte_PE"
+	JOBNAME="Count_PE"
 	COMMAND="featureCounts -a $3 \
 	-o Counts/Count_Table.out \
 	-T 8 $2/*.bam -p" 
