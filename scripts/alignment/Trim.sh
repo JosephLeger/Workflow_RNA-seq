@@ -139,14 +139,6 @@ shift $((OPTIND-1))
 ### ERRORS -----------------------------------------------------------------------------------------------------
 ################################################################################################################
 
-# Count .fastq.gz or .fq.gz files in provided directory and look for paired files
-files=$(shopt -s nullglob dotglob; echo $2/*.fastq.gz $2/*.fq.gz)
-n_R1=$(shopt -s nullglob dotglob; echo $2/*_R1*.fastq.gz $2/*_R1*.fq.gz)
-n_R2=$(shopt -s nullglob dotglob; echo $2/*_R2*.fastq.gz $2/*_R2*.fq.gz)
-
-# Check format of I_arg if provided
-adapters=$(shopt -s nullglob dotglob; echo $I_arg | grep -e '.*\.fa:.*:.*:.*')
-
 if [ $# -eq 1 ] && [ $1 == "help" ]; then
 	Help
 	exit
