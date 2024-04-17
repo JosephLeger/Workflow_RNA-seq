@@ -180,14 +180,16 @@ elif [ $1 == "PE" ]; then
 fi
 
 ## MULTIQC - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Create directory in QC folder for MultiQC
-outdir2='./QC/MultiQC'
-mkdir -p ${outdir2}
-# Create output name without strating 'QC/' and replacing '/' by '_'
-name=`echo ${outdir} | sed -e 's@\/@_@g'`
-
-## Define JOBNAME, COMMAND and launch with WAIT list
-JOBNAME="MultiQC_RSEM"
-COMMAND="multiqc ${outdir} -o ${outdir2} -n RSEM_MultiQC"
-WAIT=`echo ${JOBLIST} | sed -e 's@_,@-hold_jid @'`
-Launch
+if [ ${B_arg} == '--output-genome-bam ' ]; then
+	# Create directory in QC folder for MultiQC
+	outdir2='./QC/MultiQC'
+	mkdir -p ${outdir2}
+	# Create output name without strating 'QC/' and replacing '/' by '_'
+	name=`echo ${outdir} | sed -e 's@\/@_@g'`
+	# Define JOBNAME, COMMAND and launch with WAIT list
+	JOBNAME="MultiQC_RSEM"
+	COMMAND="multiqc ${outdir} -o ${outdir2} -n RSEM_MultiQC"
+	WAIT=`echo ${JOBLIST} | sed -e 's@_,@-hold_jid @'`
+	Launch
+ fi
+ 
