@@ -142,7 +142,7 @@ mkdir -p ${outdir}
 echo "FileName,SampleName,CellType,Batch" > ${outdir}/SampleSheet_Bulk_RNA.csv
 
 # Initialize JOBLIST to wait before running MultiQC
-JOBLIST='_'
+#JOBLIST='_'
 
 if [ $1 == "SE" ]; then
 	# Precise to eliminate empty lists for the loop
@@ -172,7 +172,7 @@ elif [ $1 == "PE" ]; then
 		# Define JOBNAME and COMMAND and launch job while append JOBLIST
 		JOBNAME="RSEM_${1}_${output}"
 		COMMAND="rsem-calculate-expression -p 8 --paired-end --star --star-gzipped-read-file $R1 $R2 $3 ${outdir}/${output} ${B_arg}--sort-bam-by-coordinate"
-		JOBLIST=${JOBLIST}','${JOBNAME}
+		#JOBLIST=${JOBLIST}','${JOBNAME}
 		Launch
 		# Append SampleSheet
 		echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv
@@ -180,16 +180,16 @@ elif [ $1 == "PE" ]; then
 fi
 
 ## MULTIQC - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-if [ ${B_arg} == '--output-genome-bam ' ]; then
+#if [ ${B_arg} == '--output-genome-bam ' ]; then
 	# Create directory in QC folder for MultiQC
-	outdir2='./QC/MultiQC'
-	mkdir -p ${outdir2}
+	#outdir2='./QC/MultiQC'
+	#mkdir -p ${outdir2}
 	# Create output name without strating 'QC/' and replacing '/' by '_'
-	name=`echo ${outdir} | sed -e 's@\/@_@g'`
+	#name=`echo ${outdir} | sed -e 's@\/@_@g'`
 	# Define JOBNAME, COMMAND and launch with WAIT list
-	JOBNAME="MultiQC_RSEM"
-	COMMAND="multiqc ${outdir} -o ${outdir2} -n RSEM_MultiQC"
-	WAIT=`echo ${JOBLIST} | sed -e 's@_,@-hold_jid @'`
-	Launch
- fi
+	#JOBNAME="MultiQC_RSEM"
+	#COMMAND="multiqc ${outdir} -o ${outdir2} -n RSEM_MultiQC"
+	#WAIT=`echo ${JOBLIST} | sed -e 's@_,@-hold_jid @'`
+	#Launch
+ #fi
  
