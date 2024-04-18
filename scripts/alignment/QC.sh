@@ -21,14 +21,17 @@ ${BOLD}SYNTHAX${END}\n\
 	sh ${script_name} <input_dir>\n\n\
 
 ${BOLD}DESCRIPTION${END}\n\
-	Perform quality check of FASTQ files using FastQC and merge results into a single file using MultiQC.\n\
+	Generate quality check summarized report for raw, trimmed or mapped files using MultiQC.\n\
+ 	If FASTQ files are provided, first launch FastQC to generate individual quality reports.\n\
 	It creates new folders './QC/<input_dir>' and './QC/MultiQC' in which quality check results are stored.\n\
-	Output files are .html files for direct visualization and .zip files containing results.\n\n\
+	Output files are HTML files for direct visualization and ZIP files containing results.\n\n\
 
 ${BOLD}ARGUMENTS${END}\n\
 	${BOLD}<input_dir1>${END}\n\
-		Directory containing .fastq.gz or .fq.gz files to use as input for QC.\n\n\
-                
+		Directory containing .fastq.gz, .fq.gz files to use as input for QC.\n\n\
+		Alternatively could be directory containing mapped files.
+  		Usually corresponds to 'Raw', 'Trimmed', 'STAR' or 'RSEM'.
+		
 ${BOLD}EXAMPLE USAGE${END}\n\
 	sh ${script_name} ${BOLD}Raw${END}\n"
 }
@@ -105,7 +108,7 @@ mkdir -p ${outdir2}
 # Create output name without strating 'QC/' and replacing '/' by '_'
 name=`echo ${outdir} | sed -e 's@\/@_@g'`
 
-## Define JOBNAME, COMMAND and launch with WAIT list
+# Define JOBNAME, COMMAND and launch with WAIT list
 JOBNAME="MultiQC_${name}"
 COMMAND="multiqc ${outdir} -o ${outdir2} -n ${name}_MultiQC"
 Launch
