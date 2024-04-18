@@ -13,25 +13,25 @@ Two quantification methods are available in this workflow :
 </p>
 
 ### Common steps
-1. **Preparing the reference :** To perform mapping to reference genome/transcriptome, it must be indexed first. To do so, it requires reference genome (FASTA file) and genome annotation (GTF file) available for download in Ensembl.org gateway.  
+0. **Preparing the reference :** To perform mapping to reference genome/transcriptome, it must be indexed first. To do so, it requires reference genome (FASTA file) and genome annotation (GTF file) available for download in Ensembl.org gateway.  
 *Note : For a qauntification with **featureCount** genome indexing must be preformed with **STAR**, whereas for transcript expression estimation it must be performed with **RSEM**.*
 
-2. **Quality Check :** Quality of each FASTQ file is performed using **FastQC**. A quality control report per file is then obtained, providing information on the quality of the bases, the length of the reads, the presence of adapters, etc. To make it easier to visualize the results, all reports are then pooled and analyzed simultaneously using **MultiQC**. 
+1. **Quality Check :** Quality of each FASTQ file is performed using **FastQC**. A quality control report per file is then obtained, providing information on the quality of the bases, the length of the reads, the presence of adapters, etc. To make it easier to visualize the results, all reports are then pooled and analyzed simultaneously using **MultiQC**. 
 
-3. **Trimming :** According to the conclusions drawn from the quality control of the reads, a trimming step is often necessary. This step makes it possible to clean the reads, for example by eliminating sequences enriched in adapters, or by trimming poor quality bases at the ends of the reads. For this, the **Trimmomatic** tool needs to be provided with the adapter sequences used for sequencing if an enrichment has been detected.  
+2. **Trimming :** According to the conclusions drawn from the quality control of the reads, a trimming step is often necessary. This step makes it possible to clean the reads, for example by eliminating sequences enriched in adapters, or by trimming poor quality bases at the ends of the reads. For this, the **Trimmomatic** tool needs to be provided with the adapter sequences used for sequencing if an enrichment has been detected.  
 A quality control is carried out on the FASTQ files resulting from trimming to ensure that the quality obtained is satisfactory.
 
 ### STAR Raw Counts Workflow 
-4. **Alignment to the genome :** This step consists of aligning the FASTQ files to the previously indexed reference genome in order to identify the regions from which the reads come. The **STAR** tool thus generates BAM files containing the reads aligned to the genome.
+3. **Alignment to the genome :** This step consists of aligning the FASTQ files to the previously indexed reference genome in order to identify the regions from which the reads come. The **STAR** tool thus generates BAM files containing the reads aligned to the genome.
 
-5. **Alignment Quality Check :** In order to analyze the proportion of correctly aligned reads, the **MultiQC** tool can be directly used to pool the quality control of the BAM files resulting from the alignment.
+4. **Alignment Quality Check :** In order to analyze the proportion of correctly aligned reads, the **MultiQC** tool can be directly used to pool the quality control of the BAM files resulting from the alignment.
 
-6. **Quantification :** This step will transform the BAM files containing the aligned reads into a count table usable for further analyzes in R or Python.
+5. **Quantification :** This step will transform the BAM files containing the aligned reads into a count table usable for further analyzes in R or Python.
 
 ### RSEM Estimation Workflow 
-4. **Transcripts estimation :** This step consists of aligning the FASTQ files to the reference transcriptome previously indexed with **RSEM** to make an estimate of the abundance of each transcript. For each FASTQ file, several files result, in particular a BAM file and a .stat folder which will make it possible to control the quality of the alignment. There are also .genes.results and .isoforms.results files containing respectively the results of the estimation of expression by genes or by transcripts which will be used for further analyzes in R or Python.
+3. **Transcripts estimation :** This step consists of aligning the FASTQ files to the reference transcriptome previously indexed with **RSEM** to make an estimate of the abundance of each transcript. For each FASTQ file, several files result, in particular a BAM file and a .stat folder which will make it possible to control the quality of the alignment. There are also .genes.results and .isoforms.results files containing respectively the results of the estimation of expression by genes or by transcripts which will be used for further analyzes in R or Python.
 
-5. **Alignment Quality Check :** In order to analyze the proportion of correctly aligned reads, the **MultiQC** tool can be directly used to pool the quality control of the BAM files resulting from the alignment.
+4. **Alignment Quality Check :** In order to analyze the proportion of correctly aligned reads, the **MultiQC** tool can be directly used to pool the quality control of the BAM files resulting from the alignment.
 
 
 # Initialization and recommendations
@@ -61,7 +61,7 @@ Raw FASTQ files must be compressed in '.fq.gz' or '.fastq.gz' format. If it is n
 
 # Workflow Step by Step
 # Common Steps
-## 1. Preparing the reference
+## 0. Preparing the reference
 This step only needs to be carried out during the first alignment. The genome or transcriptome once indexed can be reused as a reference for subsequent alignments.  
 First, you need to download reference genome FASTA file and annotaion GTF file.  
 ```bash
@@ -71,26 +71,26 @@ wget https://ftp.ensembl.org/pub/release-108/gtf/mus_musculus/Mus_musculus.GRCm3
 ```
 Then, use provided scritps in refindex folder of this repository according to the workflow you aim to perform.  
 
-### Genome indexing
+### STAR indexing
 Syntax : ```sh STAR_refindex.sh <FASTA> <GTF>```  
 ```bash
 sh STAR_refindex.sh ./Ref/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ./Ref/Mus_musculus.GRCm39.108.gtf.gz
 ```
 
-### Transcriptome indexing
+### RSEM indexing
 Syntax : ```sh RSEM_refindex.sh <FASTA> <GTF> <build_name>```  
 ```bash
 sh RSEM_refindex.sh ./Ref/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ./Ref/Mus_musculus.GRCm39.109.gtf.gz mm39.108
 ```
 
-## 2. Quality Check
+## 1. Quality Check
 Syntax : ```sh QC.sh <input_dir>```  
 ```bash
 sh QC.sh Raw
 ```
-Pooled results are available in **QC/MultiQC/QC_Raw_MultiQC.html** file.  
+Pooled results are available in ./QC/MultiQC/QC_Raw_MultiQC.html file.  
 
-## 3. Trimming
+## 2. Trimming
 If low quality bases or adapter enrichment is detected, you will need to perform trimming step.  
 Provided trimming script allow several options :
 * **-S** (Slingdingwindow) : Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold.  
@@ -106,35 +106,41 @@ Syntax : ```sh Trim.sh [options] <SE|PE> <input_dir>```
 sh Trim.sh -S 4:15 -L 3 -T 3 -M 36 -I ./Ref/NexteraPE-PE.fa:2:30:10 PE Raw
 ```
 
-Perform a quality check after trimming to ensure all adapters and low quality bases have been removed correctly
+Perform a quality check after trimming to ensure all adapters and low quality bases have been removed correctly.  
 ```bash
 sh QC.sh Trimmed/Trimmomatic/Paired
 ```  
   
 # STAR Raw Counts
-## 4. Alignment to genome
+## 3. Alignment to genome
 Syntax : ```sh STAR.sh <SE|PE> <input_dir> <refindex>```
 ```bash
 sh STAR.sh PE Trimmed/Trimmomatic/Paired ./Ref/refdata-STAR-mm39.108/GenomeDir
 ```
-Quality Check is automatically launched after alignment and available in **QC/MultiQC/STAR_MultiQC.html** file.  
-
-## 6. Quantification
+## 4. Quality Check
+Syntax : ```sh QC.sh <input_dir>```  
+```bash
+sh QC.sh STAR
+```
+Pooled results are available in ./QC/MultiQC/STAR_MultiQC.html file.  
+## 5. Quantification
 Syntax : ```sh Count.sh <SE|PE> <input_dir> <GTF>```
 ```bash
 sh Count.sh PE STAR .Ref/Mus_musculus.GRCm39.108.gtf
 ```
 
-
 # RSEM Estimation
-## 4. Transcripts Estimation
+## 3. Transcripts Estimation
 Syntax : ```sh RSEM.sh <SE|PE> <input_dir> <refindex>```   
 ```bash
 sh RSEM.sh PE Trimmed/Trimmomatic/Paired ./Ref/refdata-RSEM-mm39.108/mm39.108
+```  
+## 4. Quality Check
+Syntax : ```sh QC.sh <input_dir>```  
+```bash
+sh QC.sh RSEM
 ```
-Quality Check is automatically launched after alignment and available in **QC/MultiQC/RSEM_MultiQC.html** file.  
-
-
+Pooled results are available in ./QC/MultiQC/RSEM_MultiQC.html file.  
 
 
 
