@@ -13,7 +13,7 @@ Two quantification methods are available in this workflow :
 </p>
 
 ### Common steps
-0. **Preparing the reference :** To perform mapping to reference genome/transcriptome, it must be indexed first. To do so, it requires reference genome (FASTA file) and genome annotation (GTF file) available for download in Ensembl.org gateway.  
+0. **Preparation of references :** To perform mapping to reference genome/transcriptome, it must be indexed first. To do so, it requires reference genome (FASTA file) and genome annotation (GTF file) available for download in Ensembl.org gateway.  
 *Note : For a qauntification with **featureCount** genome indexing must be preformed with **STAR**, whereas for transcript expression estimation it must be performed with **RSEM**.*
 
 1. **Quality Check :** Quality of each FASTQ file is performed using **FastQC**. A quality control report per file is then obtained, providing information on the quality of the bases, the length of the reads, the presence of adapters, etc. To make it easier to visualize the results, all reports are then pooled and analyzed simultaneously using **MultiQC**. 
@@ -61,7 +61,7 @@ Raw FASTQ files must be compressed in '.fq.gz' or '.fastq.gz' format. If it is n
 
 # Workflow Step by Step
 # Common Steps
-## 0. Preparing the reference
+## 0. Preparation of references
 This step only needs to be carried out during the first alignment. The genome or transcriptome once indexed can be reused as a reference for subsequent alignments.  
 First, you need to download reference genome FASTA file and annotaion GTF file.  
 ```bash
