@@ -94,7 +94,7 @@ WAIT=''
 
 ## STAR - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Initialize JOBLIST to wait before running MultiQC
-JOBLIST='_'
+#JOBLIST='_'
 
 # Create STAR directory for outputs
 outdir='STAR'
@@ -140,20 +140,20 @@ elif [ $1 == "PE" ]; then
                 --runThreadN 10 \
                 --readFilesCommand gunzip -c \
                 --outFileNamePrefix ${outdir}/${output}"
-		JOBLIST=${JOBLIST}','${JOBNAME}
+		#JOBLIST=${JOBLIST}','${JOBNAME}
 		Launch
 	done
 fi
 
 ## MULTIQC - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Create directory in QC folder for MultiQC
-outdir2='./QC/MultiQC'
-mkdir -p ${outdir2}
+#outdir2='./QC/MultiQC'
+#mkdir -p ${outdir2}
 # Create output name without strating 'QC/' and replacing '/' by '_'
-name=`echo ${outdir} | sed -e 's@\/@_@g'`
+#name=`echo ${outdir} | sed -e 's@\/@_@g'`
 
 ## Define JOBNAME, COMMAND and launch with WAIT list
-JOBNAME="MultiQC_STAR"
-COMMAND="multiqc ${outdir} -o ${outdir2} -n STAR_MultiQC"
-WAIT=`echo ${JOBLIST} | sed -e 's@_,@-hold_jid @'`
-Launch
+#JOBNAME="MultiQC_STAR"
+#COMMAND="multiqc ${outdir} -o ${outdir2} -n STAR_MultiQC"
+#WAIT=`echo ${JOBLIST} | sed -e 's@_,@-hold_jid @'`
+#Launch
