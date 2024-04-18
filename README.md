@@ -14,7 +14,7 @@ Two quantification methods are available in this workflow :
 
 ### Common steps
 0. **Preparation of references :** To perform mapping to reference genome/transcriptome, it must be indexed first. To do so, it requires reference genome (FASTA file) and genome annotation (GTF file) available for download in Ensembl.org gateway.  
-*Note : For a qauntification with **featureCount** genome indexing must be preformed with **STAR**, whereas for transcript expression estimation it must be performed with **RSEM**.*
+*Note : For a quantification with **featureCount** genome indexing must be preformed with **STAR**, whereas for transcript expression estimation it must be performed with **RSEM**.*
 
 1. **Quality Check :** Quality of each FASTQ file is performed using **FastQC**. A quality control report per file is then obtained, providing information on the quality of the bases, the length of the reads, the presence of adapters, etc. To make it easier to visualize the results, all reports are then pooled and analyzed simultaneously using **MultiQC**. 
 
@@ -69,7 +69,7 @@ First, you need to download reference genome FASTA file and annotaion GTF file.
 wget https://ftp.ensembl.org/pub/release-108/fasta/mus_musculus/dna/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz
 wget https://ftp.ensembl.org/pub/release-108/gtf/mus_musculus/Mus_musculus.GRCm39.108.gtf.gz
 ```
-Then, use provided scritps in refindex folder of this repository according to the workflow you aim to perform.  
+Then, use provided scripts in refindex folder of this repository according to the workflow you aim to perform.  
 
 ### STAR indexing
 Syntax : ```sh STAR_refindex.sh <FASTA> <GTF>```  
