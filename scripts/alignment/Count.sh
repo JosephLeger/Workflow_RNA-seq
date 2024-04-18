@@ -22,7 +22,7 @@ ${BOLD}SYNTHAX${END}\n\
 ${BOLD}DESCRIPTION${END}\n\
 	Generate a count table and associated Sample_Sheet.csv file from aligned BAM files for post-processing analysis workflow.\n\
 	It creates a new folder './Counts' in which resulting files will be stored.\n\
-	A pre-constructed Sample_Sheet.csv is created to make post-processing analysis easier.\n\n\
+	A pre-filled SampleSheet in CSV format is generated in parallel.\n\n\
     
 ${BOLD}ARGUMENTS${END}\n\
 	${BOLD}<SE|PE>${END}\n\
