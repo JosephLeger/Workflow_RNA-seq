@@ -117,7 +117,7 @@ Syntax : ```sh STAR.sh <SE|PE> <input_dir> <refindex>```
 ```bash
 sh STAR.sh PE Trimmed/Trimmomatic/Paired ./Ref/refdata-STAR-mm39.108/GenomeDir
 ```
-Quality Check is automatically launched after alignment. Pooled results are available in **QC/MultiQC/STAR_MultiQC.html** file.  
+Quality Check is automatically launched after alignment and available in **QC/MultiQC/STAR_MultiQC.html** file.  
 
 ## 6. Quantification
 Syntax : ```sh Count.sh <SE|PE> <input_dir> <GTF>```
@@ -132,7 +132,7 @@ Syntax : ```sh RSEM.sh <SE|PE> <input_dir> <refindex>```
 ```bash
 sh RSEM.sh PE Trimmed/Trimmomatic/Paired ./Ref/refdata-RSEM-mm39.108/mm39.108
 ```
-Quality Check is automatically launched after alignment. Pooled results are available in **QC/MultiQC/RSEM_MultiQC.html** file.  
+Quality Check is automatically launched after alignment and available in **QC/MultiQC/RSEM_MultiQC.html** file.  
 
 
 
