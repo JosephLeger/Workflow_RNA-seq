@@ -88,11 +88,6 @@ Syntax : ```sh QC.sh <input_dir>```
 ```bash
 sh QC.sh Raw
 ```
-  
-Syntax : ```sh MultiQC.sh <input_dir>```  
-```bash
-sh MultiQC.sh QC/Raw
-```
 Pooled results are available in **QC/MultiQC/QC_Raw_MultiQC.html** file.  
 
 ## 3. Trimming
@@ -113,8 +108,7 @@ sh Trim.sh -S 4:15 -L 3 -T 3 -M 36 -I ./Ref/NexteraPE-PE.fa:2:30:10 PE Raw
 
 Perform a quality check after trimming to ensure all adapters and low quality bases have been removed correctly
 ```bash
-sh QC.sh Trimmed/Trimmomatic
-sh MultiQC.sh QC/Trimmed/Trimmomatic
+sh QC.sh Trimmed/Trimmomatic/Paired
 ```  
   
 # STAR Raw Counts
@@ -123,11 +117,7 @@ Syntax : ```sh STAR.sh <SE|PE> <input_dir> <refindex>```
 ```bash
 sh STAR.sh PE Trimmed/Trimmomatic/Paired ./Ref/refdata-STAR-mm39.108/GenomeDir
 ```
-## 5. Alignment Quality Check
-Synthax : ```sh MultiQC.sh <inpit_dir>```
-```bash
-sh MultiQC.sh STAR
-```
+Quality Check is automatically launched after alignment. Pooled results are available in **QC/MultiQC/STAR_MultiQC.html** file.  
 
 ## 6. Quantification
 Syntax : ```sh Count.sh <SE|PE> <input_dir> <GTF>```
@@ -142,12 +132,8 @@ Syntax : ```sh RSEM.sh <SE|PE> <input_dir> <refindex>```
 ```bash
 sh RSEM.sh PE Trimmed/Trimmomatic/Paired ./Ref/refdata-RSEM-mm39.108/mm39.108
 ```
+Quality Check is automatically launched after alignment. Pooled results are available in **QC/MultiQC/RSEM_MultiQC.html** file.  
 
-## 5. Alignment Quality Check
-Synthax : ```sh MultiQC.sh <inpit_dir>```  
-```bash
-sh MultiQC.sh RSEM
-```
 
 
 
