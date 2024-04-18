@@ -20,7 +20,7 @@ ${BOLD}SYNTHAX${END}\n\
 	sh STAR.sh <SE|PE> <input_dir> <refindex>\n\n\
     
 ${BOLD}DESCRIPTION${END}\n\
-	Perform genome alignement of paired or unpaired fastq files using STAR.\n\
+	Perform genome alignement of paired or unpaired FASTQ files using STAR.\n\
 	Resulting BAM files are stored in './STAR' directory.\n\n\
     
 ${BOLD}ARGUMENTS${END}\n\
@@ -77,7 +77,6 @@ fi
 
 ## SETUP - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 module load star/2.7.10b
-module load multiqc/1.13
 
 # Generate REPORT
 echo '#' >> ./0K_REPORT.txt
@@ -93,9 +92,6 @@ echo -e ${COMMAND} |  sed 's@^@   \| @' >> ./0K_REPORT.txt
 WAIT=''
 
 ## STAR - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Initialize JOBLIST to wait before running MultiQC
-#JOBLIST='_'
-
 # Create STAR directory for outputs
 outdir='STAR'
 mkdir -p ${outdir}
@@ -117,7 +113,6 @@ if [ $1 == "SE" ]; then
                 --runThreadN 10 \
                 --readFilesCommand gunzip -c \
                 --outFileNamePrefix ${outdir}/${output}"
-		JOBLIST=${JOBLIST}','${JOBNAME}
 		Launch
 	done
 elif [ $1 == "PE" ]; then
@@ -140,20 +135,6 @@ elif [ $1 == "PE" ]; then
                 --runThreadN 10 \
                 --readFilesCommand gunzip -c \
                 --outFileNamePrefix ${outdir}/${output}"
-		#JOBLIST=${JOBLIST}','${JOBNAME}
 		Launch
 	done
 fi
-
-## MULTIQC - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Create directory in QC folder for MultiQC
-#outdir2='./QC/MultiQC'
-#mkdir -p ${outdir2}
-# Create output name without strating 'QC/' and replacing '/' by '_'
-#name=`echo ${outdir} | sed -e 's@\/@_@g'`
-
-## Define JOBNAME, COMMAND and launch with WAIT list
-#JOBNAME="MultiQC_STAR"
-#COMMAND="multiqc ${outdir} -o ${outdir2} -n STAR_MultiQC"
-#WAIT=`echo ${JOBLIST} | sed -e 's@_,@-hold_jid @'`
-#Launch
