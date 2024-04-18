@@ -21,7 +21,7 @@ ${BOLD}SYNTHAX${END}\n\
 	sh ${script_name} <input_dir>\n\n\
 
 ${BOLD}DESCRIPTION${END}\n\
-  Perform quality check of FASTQ files using FastQC and merge results into a single file using MultiQC.\n\
+	Perform quality check of FASTQ files using FastQC and merge results into a single file using MultiQC.\n\
 	It creates new folders './QC/<input_dir>' and './QC/MultiQC' in which quality check results are stored.\n\
 	Output files are .html files for direct visualization and .zip files containing results.\n\n\
 
@@ -47,16 +47,8 @@ elif [ $# -ne 1 ]; then
 	exit
 elif [ $(ls $1/*.fastq.gz $1/*.fq.gz $1/**.cnt $1/**.out 2>/dev/null | wc -l) -lt 1 ]; then		
 	# Error if provided directories are empty or don't exist
- 		echo -e "Error : can not find any file in provided directories. Please make sure the provided input directories exist, and contain .fastq.gz or .fq.gz files."
-		exit
-	fi
- 
-	# Warning if some provided directories are empty or don't exist
-	for input in "$@"; do
- 		if [ $(ls ${input}/*.fastq.gz ${input}/*.fq.gz ${input}/*.bam 2>/dev/null | wc -l) -lt 1 ]; then
-   			echo -e "Warning : can not find files in ${input} directory."
-		fi
-	done
+ 	echo -e "Error : can not find any file in provided directories. Please make sure the provided input directories exist, and contain .fastq.gz or .fq.gz files."
+	exit
 fi
 
 ################################################################################################################
@@ -84,26 +76,27 @@ WAIT=''
 # Initialize JOBLIST to wait before running MultiQC
 JOBLIST='_'
 
-# For each input file given as argument
-for input in "$@"; do
+if [ $(ls $1/*.fastq.gz $1/*.fq.gz 2>/dev/null | wc -l) -gt 0 ]; then
 	# Create directory in QC folder following the same path than input path provided
-	outdir=QC/${input}
+	outdir=QC/$1
 	mkdir -p ${outdir}
 	# Generate jobname replacing '/' by '_'
-	name=`echo ${input} | sed -e 's@\/@_@g'`
+	name=`echo $1 | sed -e 's@\/@_@g'`
 	# Precise to eliminate empty lists for the loop
 	shopt -s nullglob
 	# Launch FastQC for each provided file
-	for i in ${input}/*.fastq.gz ${input}/*.fq.gz; do
+	for i in $1/*.fastq.gz $1/*.fq.gz; do
 		# Set variables for jobname
-		current_file=`echo $i | sed -e "s@${input}\/@@g" | sed -e "s@\.fastq\.gz\|\.fq\.gz@@g"`
+		current_file=`echo $i | sed -e "s@$1\/@@g" | sed -e "s@\.fastq\.gz\|\.fq\.gz@@g"`
 		# Define JOBNAME and COMMAND and launch job while append JOBLIST
 		JOBNAME="QC_${name}_${current_file}"
 		COMMAND="fastqc -o ${outdir} --noextract -f fastq $i"
 		JOBLIST=${JOBLIST}','${JOBNAME}
 		Launch
 	done
-done
+else
+	outdir=$1
+ fi
 
 ## MULTIQC - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Create directory in QC folder for MultiQC
