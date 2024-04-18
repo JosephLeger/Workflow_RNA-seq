@@ -22,7 +22,7 @@ ${BOLD}SYNTHAX${END}\n\
     
 ${BOLD}DESCRIPTION${END}\n\
 	Perform file optimization and duplicates removal using Clumpify or/and trimming of paired or unpaired FASTQ files using Trimmomatic.\n\
-	It creates new folders './Trimmed/Trimmomatic' in which trimmed FASTQ files are stored and './Trimmed/Clumpify' in which optimized files are stored.\n\
+	It creates new folders './Trimmed/Clumpify' in which optimized files are stored and './Trimmed/Trimmomatic' in which trimmed FASTQ files are stored.\n\
 	If files are paired, trimming results are stored in subfolders './Trimmed/Trimmomatic/Paired' and './Trimmed/Trimmomatic/Unpaired'. In this case, it is recommended to use resulting paired files for following steps.\n\
 
 ${BOLD}OPTIONS${END}\n\
@@ -32,7 +32,7 @@ ${BOLD}OPTIONS${END}\n\
 
 	${BOLD}Trimmomatic Options${END}\n\n\
 	${BOLD}-S${END} ${UDL}windowSize${END}:${UDL}requiredQuality${END}, ${BOLD}S${END}lidingwindow\n\
-		Performs a sliding window trimming approach. It starts scanning at the 5' end and clips the read once the average quality within the window falls below a threshold.\n\
+		Perform a sliding window trimming approach. It starts scanning at the 5' end and clips the read once the average quality within the window falls below a threshold.\n\
 		Default = 4:15\n\n\
 	${BOLD}-L${END} ${UDL}quality${END}, ${BOLD}L${END}eading\n\
 		Cut bases off the start of a read, if below a threshold quality.\n\
