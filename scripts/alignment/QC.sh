@@ -48,7 +48,7 @@ elif [ $# -ne 1 ]; then
 	echo "Error synthax : please use following synthax"
 	echo "          sh ${script_name} <input_dir>"
 	exit
-elif [ $(ls $1/*.fastq.gz $1/*.fq.gz $1/**.cnt $1/**.out 2>/dev/null | wc -l) -lt 1 ]; then		
+elif [ $(ls $1/*.fastq.gz $1/*.fq.gz $1/**/*.cnt $1/**/*.out 2>/dev/null | wc -l) -lt 1 ]; then		
 	# Error if provided directories are empty or don't exist
  	echo -e "Error : can not find any file in provided directories. Please make sure the provided input directories exist, and contain .fastq.gz or .fq.gz files."
 	exit
