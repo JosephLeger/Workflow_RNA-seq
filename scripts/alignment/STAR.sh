@@ -103,7 +103,7 @@ if [ $1 == "SE" ]; then
         for i in $2/*.fastq.gz $2/*.fq.gz; do
                 # Define individual output filenames
                 output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/\.fastq\.gz\|\.fq\.gz/_/g'`
-		# Define JOBNAME and COMMAND and launch job while append JOBLIST
+		# Define JOBNAME and COMMAND and launch job
 		JOBNAME="STAR_SE_${output}"
 		COMMAND="STAR \
                 --runMode alignReads \
@@ -125,7 +125,7 @@ elif [ $1 == "PE" ]; then
                 R2=`echo $i | sed -e 's/_R1/_R2/g'`
                 # Define unique output filename for paires
                 output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/_R1//g' | sed -e 's/\.fastq\.gz\|\.fq\.gz/_/g'`
-		# Define JOBNAME and COMMAND and launch job while append JOBLIST
+		# Define JOBNAME and COMMAND and launch job
 		JOBNAME="STAR_PE_${output}"
 		COMMAND="STAR \
                 --runMode alignReads \
