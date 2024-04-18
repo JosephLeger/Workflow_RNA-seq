@@ -118,7 +118,6 @@ fi
 ## SETUP - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 module load rsem/1.3.2
 module load star/2.7.5a
-module load multiqc/1.13
 
 # Generate REPORT
 echo '#' >> ./0K_REPORT.txt
@@ -141,9 +140,6 @@ mkdir -p ${outdir}
 # Initialize SampleSheet
 echo "FileName,SampleName,CellType,Batch" > ${outdir}/SampleSheet_Bulk_RNA.csv
 
-# Initialize JOBLIST to wait before running MultiQC
-#JOBLIST='_'
-
 if [ $1 == "SE" ]; then
 	# Precise to eliminate empty lists for the loop
 	shopt -s nullglob
@@ -151,10 +147,9 @@ if [ $1 == "SE" ]; then
 	for i in $2/*.fastq.gz $2/*.fq.gz; do
 		# Define individual output filenames
 		output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/\.fastq\.gz\|\.fq\.gz//g'`
-		# Define JOBNAME and COMMAND and launch job while append JOBLIST
+		# Define JOBNAME and COMMAND and launch job
 		JOBNAME=RSEM_${1}_${output}
 		COMMAND="rsem-calculate-expression -p 8 --star --star-gzipped-read-file $i $3 ${outdir}/${output} ${B_arg}--sort-bam-by-coordinate"
-		JOBLIST=${JOBLIST}','${JOBNAME}
 		Launch
 		# Append SampleSheet
 		echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv       
@@ -169,27 +164,12 @@ elif [ $1 == "PE" ]; then
 		R2=`echo $i | sed -e 's/_R1/_R2/g'`
 		# Define unique output filename for paires
 		output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/_R1//g' | sed -e 's/\.fastq\.gz\|\.fq\.gz//g'`
-		# Define JOBNAME and COMMAND and launch job while append JOBLIST
+		# Define JOBNAME and COMMAND and launch job
 		JOBNAME="RSEM_${1}_${output}"
 		COMMAND="rsem-calculate-expression -p 8 --paired-end --star --star-gzipped-read-file $R1 $R2 $3 ${outdir}/${output} ${B_arg}--sort-bam-by-coordinate"
-		#JOBLIST=${JOBLIST}','${JOBNAME}
 		Launch
 		# Append SampleSheet
 		echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv
 	done   
 fi
 
-## MULTIQC - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#if [ ${B_arg} == '--output-genome-bam ' ]; then
-	# Create directory in QC folder for MultiQC
-	#outdir2='./QC/MultiQC'
-	#mkdir -p ${outdir2}
-	# Create output name without strating 'QC/' and replacing '/' by '_'
-	#name=`echo ${outdir} | sed -e 's@\/@_@g'`
-	# Define JOBNAME, COMMAND and launch with WAIT list
-	#JOBNAME="MultiQC_RSEM"
-	#COMMAND="multiqc ${outdir} -o ${outdir2} -n RSEM_MultiQC"
-	#WAIT=`echo ${JOBLIST} | sed -e 's@_,@-hold_jid @'`
-	#Launch
- #fi
- 
