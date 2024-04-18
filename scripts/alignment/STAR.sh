@@ -21,12 +21,12 @@ ${BOLD}SYNTHAX${END}\n\
     
 ${BOLD}DESCRIPTION${END}\n\
 	Perform genome alignement of paired or unpaired fastq files using STAR.\n\
-	After alignment, a MultiQC report is generated in '.QC/MultiQC' to summarize information about resulting files.\n\n\
+	Resulting BAM files are stored in './STAR' directory.\n\n\
     
 ${BOLD}ARGUMENTS${END}\n\
 	${BOLD}<SE|PE>${END}\n\
 		Define whether fastq files are Single-End (SE) or Paired-End (PE).\n\
-  		If SE is provided, each file is aligned individually and give rise to an output file stored in ./STAR directory.\n\
+  		If SE is provided, each file is aligned individually and give rise to an output file stored in './STAR' directory.\n\
 		If PE is provided, files are aligned in pair (R1 and R2), giving rise to a single output files from a pair of input files.\n\n\
 	${BOLD}<input_dir>${END}\n\
 		Directory containing .fastq.gz or .fq.gz files to use as input for alignment.\n\
