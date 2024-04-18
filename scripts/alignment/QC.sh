@@ -21,15 +21,14 @@ ${BOLD}SYNTHAX${END}\n\
 	sh ${script_name} <input_dir>\n\n\
 
 ${BOLD}DESCRIPTION${END}\n\
-	Generate quality check summarized report for raw, trimmed or mapped files using MultiQC.\n\
+	Generate summarized quality check report for raw, trimmed or mapped files using MultiQC.\n\
  	If FASTQ files are provided, first launch FastQC to generate individual quality reports.\n\
 	It creates new folders './QC/<input_dir>' and './QC/MultiQC' in which quality check results are stored.\n\
 	Output files are HTML files for direct visualization and ZIP files containing results.\n\n\
 
 ${BOLD}ARGUMENTS${END}\n\
 	${BOLD}<input_dir1>${END}\n\
-		Directory containing .fastq.gz, .fq.gz files to use as input for QC.\n\n\
-		Alternatively could be directory containing mapped files.
+		Directory containing QC reports files or FASTQ files.\n\n\
   		Usually corresponds to 'Raw', 'Trimmed', 'STAR' or 'RSEM'.
 		
 ${BOLD}EXAMPLE USAGE${END}\n\
