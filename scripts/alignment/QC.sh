@@ -73,10 +73,9 @@ echo -e ${COMMAND} |  sed 's@^@   \| @' >> ./0K_REPORT.txt
 WAIT=''
 
 ## FASTQC - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-# Initialize JOBLIST to wait before running MultiQC
-JOBLIST='_'
-
 if [ $(ls $1/*.fastq.gz $1/*.fq.gz 2>/dev/null | wc -l) -gt 0 ]; then
+	# Initialize JOBLIST to wait before running MultiQC
+	JOBLIST='_'
 	# Create directory in QC folder following the same path than input path provided
 	outdir=QC/$1
 	mkdir -p ${outdir}
@@ -94,9 +93,10 @@ if [ $(ls $1/*.fastq.gz $1/*.fq.gz 2>/dev/null | wc -l) -gt 0 ]; then
 		JOBLIST=${JOBLIST}','${JOBNAME}
 		Launch
 	done
+ 	WAIT=`echo ${JOBLIST} | sed -e 's@_,@-hold_jid @'`
 else
 	outdir=$1
- fi
+fi
 
 ## MULTIQC - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Create directory in QC folder for MultiQC
@@ -108,5 +108,4 @@ name=`echo ${outdir} | sed -e 's@\/@_@g'`
 ## Define JOBNAME, COMMAND and launch with WAIT list
 JOBNAME="MultiQC_${name}"
 COMMAND="multiqc ${outdir} -o ${outdir2} -n ${name}_MultiQC"
-WAIT=`echo ${JOBLIST} | sed -e 's@_,@-hold_jid @'`
 Launch
