@@ -43,6 +43,8 @@ setwd(PATH)
 library(Biobase)
 library(dplyr)
 library(stringr)
+library(org.Mm.eg.db)
+library(org.Hs.eg.db)
 library(ggplot2)
 library(pheatmap)
 library(DESeq2)
@@ -64,7 +66,6 @@ dir.create(file.path(paste(PATH, "/Saves/GeneList", sep = ""), "pval"))
 COUNT <- read.table(paste(INPUT_DIR, '/Count_Table.out', sep = ''), 
                     sep = '\t', header = TRUE)
 METADATA      <- read.table(SAMPLE_SHEET, sep = ',', header = T)
-METADATA$File <- str_replace_all(str_replace_all(METADATA$File,'/','.'),'-','.')
 COMPARISONS   <- read.csv(COMP_TO_MAKE)
 
 
@@ -74,30 +75,45 @@ COMPARISONS   <- read.csv(COMP_TO_MAKE)
 #===============================================================================
 
 # Create table and reorder samples based on sheet row order
-Table           <- COUNT[,7:ncol(COUNT)]
-Table           <- Table[,METADATA$File]
+Table <- data.frame(matrix(0, nrow(COUNT), ncol(COUNT)-6))
+for(i in 1:length(METADATA$File)){
+  Table[,i] <- COUNT[,grep(METADATA$File[i], colnames(COUNT))]
+}
 colnames(Table) <- METADATA$Sample
 rownames(Table) <- COUNT$Geneid
 
-
-
 # Changing Ensembl id to GeneSymbol manually
 #Using : https://www.biotools.fr/mouse/ensembl_symbol_converter
-write.table(rownames(Table), paste0(PATH, '/Saves/manual_gene_index.txt'), 
-            sep = '\t', quote = FALSE, row.names = FALSE, col.names = FALSE)
-index <- read.table(paste0(PATH, '/Saves/manual_gene_index.txt'), sep = '\t')
+#write.table(rownames(Table), paste0(PATH, '/Saves/manual_gene_index.txt'), 
+#            sep = '\t', quote = FALSE, row.names = FALSE, col.names = FALSE)
+#index <- read.table(paste0(PATH, '/Saves/manual_gene_index.txt'), sep = '\t')
+#
+#gene_id     <- c()
+#for(i in 1:nrow(index)){
+#  if(index[i, 2] == ""){
+#    gene_id <- c(gene_id, index[i, 1])
+#  } else {
+#    gene_id <- c(gene_id, index[i, 2])
+#  }
+#}
+# Add gene symbol
+#Table       <- cbind(Symbol = gene_id, Table)
 
-gene_id     <- c()
-for(i in 1:nrow(index)){
-  if(index[i, 2] == ""){
-    gene_id <- c(gene_id, index[i, 1])
-  } else {
-    gene_id <- c(gene_id, index[i, 2])
+# Changing Ensembl id to GeneSymbol using org.Mm.eg.db / org.Hs.eg.db
+ID     <- rownames(Table)
+mapped <- mapIds(org.Mm.eg.db, 
+                 keys = ID,
+                 keytype = 'ENSEMBL', 
+                 column = 'SYMBOL')
+Symbol <- c()
+for(j in 1:length(ID)){
+  if(!is.na(mapped[j])){
+    Symbol <- c(Symbol, mapped[j])
+  }else{
+    Symbol <- c(Symbol, ID[j])
   }
 }
-
-# Add gene symbol
-Table       <- cbind(Symbol = gene_id, Table)
+Table <- cbind(Symbol = Symbol, Table)
 
 # Save Table
 write.table(Table, paste0(PATH, '/Table/Table_Raw.txt'), 
@@ -250,7 +266,7 @@ for(g in names(table(METADATA$Group))){
 }
 # Save heatmaps as png files
 for(g in names(table(METADATA$Group))){
-  png(paste(PATH, '/Figures/Heatmaps/group_', g, '_norm.png'),
+  png(paste0(PATH, '/Figures/Heatmaps/group_', g, '_norm.png'),
       width = 9, height = 9, units = "in", res = 100)
   print(plot_list[[g]])
   dev.off()
@@ -534,6 +550,8 @@ for(file in files_res){
 # Save complete table regrouping all important informations
 write.table(Table_worked, paste0(PATH, '/Table/Table_Worked.txt'), 
             sep = '\t', quote = FALSE, row.names = TRUE, col.names = TRUE)
+
+
 
 
 
