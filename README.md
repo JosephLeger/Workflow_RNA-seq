@@ -60,7 +60,7 @@ subread                     2.0.1
 To start the workflow, create a new directory for the project and put previously downloaded scripts inside. Use it as working directory for the following steps (except for reference indexing). Create a 'Raw' subdirectory and put all the raw FASTQ files inside.  
 Raw FASTQ files must be compressed in '.fq.gz' or '.fastq.gz' format. If it is not the case, you need to compress them using `gzip Raw/*.fastq`.  
 
-For the following examples, this folder tree will be used :
+For the following example, this type of folder tree is used :
 
 <p align="left">
 <img src="https://github.com/JosephLeger/Bulk_RNA-seq/blob/main/img/paths.png"  width="50%" height="50%">
