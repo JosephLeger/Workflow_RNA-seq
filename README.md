@@ -71,13 +71,13 @@ For the following examples, this folder tree will be used :
 # Common Steps
 ## 0. Preparation of references
 This step only needs to be carried out during the first alignment. The genome or transcriptome once indexed can be reused as a reference for subsequent alignments.  
-First, you need to download reference genome FASTA file and annotaion GTF file.  
+First, you need to download reference genome FASTA file and annotaion GTF file in the Genome folder.  
 ```bash
 # Example with mouse genome from Ensembl.org
 wget https://ftp.ensembl.org/pub/release-108/fasta/mus_musculus/dna/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz
 wget https://ftp.ensembl.org/pub/release-108/gtf/mus_musculus/Mus_musculus.GRCm39.108.gtf.gz
 ```
-Then, use provided scripts in refindex folder of this repository according to the workflow you aim to perform.  
+Then, create a directory for the reference and use provided scripts in refindex folder of this repository according to the workflow you aim to perform.  
 
 ### STAR indexing
 Syntax : ```sh STAR_refindex.sh <FASTA> <GTF>```  
@@ -90,6 +90,8 @@ Syntax : ```sh RSEM_refindex.sh <FASTA> <GTF> <build_name>```
 ```bash
 sh RSEM_refindex.sh ../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ../Genome/Mus_musculus.GRCm39.109.gtf.gz mm39.108
 ```
+*Once indexing is done, every following steps are performed directly in the project directory.*  
+
 
 ## 1. Quality Check
 Syntax : ```sh QC.sh <input_dir>```  
@@ -111,7 +113,7 @@ Provided trimming script allow several options :
   
 Syntax : ```sh Trim.sh [options] <SE|PE> <input_dir>```  
 ```bash
-sh Trim.sh -S 4:15 -L 3 -T 3 -M 36 -I ./Ref/NexteraPE-PE.fa:2:30:10 PE Raw
+sh Trim.sh -S 4:15 -L 3 -T 3 -M 36 -I ../Ref/Trimmomatic/NexteraPE-PE.fa:2:30:10 PE Raw
 ```
 
 Perform a quality check after trimming to ensure all adapters and low quality bases have been removed correctly.  
@@ -134,7 +136,7 @@ Pooled results are available in ./QC/MultiQC/STAR_MultiQC.html file.
 ## 5. Quantification
 Syntax : ```sh Count.sh <SE|PE> <input_dir> <GTF>```
 ```bash
-sh Count.sh PE STAR ..Ref/Mus_musculus.GRCm39.108.gtf
+sh Count.sh PE STAR ../Ref/Genome/Mus_musculus.GRCm39.108.gtf
 ```
 
 # RSEM Estimation
