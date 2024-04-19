@@ -62,7 +62,7 @@ Create a 'Raw' subdirectory and put all the raw FASTQ files inside.
 Raw FASTQ files must be compressed in '.fq.gz' or '.fastq.gz' format. If it is not the case, you need to compress them using `gzip Raw/*.fastq`.  
 
 <p align="center">
-<img src="https://github.com/JosephLeger/Bulk_RNA-seq/blob/main/img/paths.png"  width="90%" height="90%">
+<img src="https://github.com/JosephLeger/Bulk_RNA-seq/blob/main/img/paths.png"  width="50%" height="50%">
 </p>
 
 # Workflow Step by Step
