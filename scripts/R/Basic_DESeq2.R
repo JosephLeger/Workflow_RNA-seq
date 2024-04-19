@@ -28,10 +28,10 @@ rm(list=ls(all.names=TRUE))
 ################################################################################
 
 PROJECT_NAME <- "Example_Project"
-PATH         <- "C:/Users/E15639P/Desktop/GL"
-INPUT_DIR    <- "C:/Users/E15639P/Desktop/GL/Data"
-SAMPLE_SHEET <- "C:/Users/E15639P/Desktop/GL/Data/Sample_Sheet.csv"
-COMP_TO_MAKE <- "C:/Users/E15639P/Desktop/GL/Data/Comparisons_to_make.csv"
+PATH         <- "C:/Path/to/project/directory"
+INPUT_DIR    <- "C:/Path/to/data/directory"
+SAMPLE_SHEET <- "C:/Path/to/Sample_Sheet.csv"
+COMP_TO_MAKE <- "C:/Path/to/Comparisons_to_make.csv"
 
 ################################################################################
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
