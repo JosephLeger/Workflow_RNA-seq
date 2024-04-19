@@ -57,13 +57,15 @@ subread                     2.0.1
 ```
 
 ### Project diretcory
-To start the workflow, create a new directory for the project and put previously downloaded scripts inside. Create a 'Raw' subdirectory and put all the raw FASTQ files inside.  
+To start the workflow, create a new directory for the project and put previously downloaded scripts inside. Use it as working directory for the following steps.  
+Create a 'Raw' subdirectory and put all the raw FASTQ files inside.  
 Raw FASTQ files must be compressed in '.fq.gz' or '.fastq.gz' format. If it is not the case, you need to compress them using `gzip Raw/*.fastq`.  
 
 # Workflow Step by Step
 # Common Steps
 ## 0. Preparation of references
-This step only needs to be carried out during the first alignment. The genome or transcriptome once indexed can be reused as a reference for subsequent alignments.  
+This step only needs to be carried out during the first alignment. The genome or transcriptome once indexed can be reused as a reference for subsequent alignments, so it is recommended to index genomes in a generic directory.  
+For this example, indexing is performed in ./Ref/<ref_name> directory.  
 First, you need to download reference genome FASTA file and annotaion GTF file.  
 ```bash
 # Example with mouse genome from Ensembl.org
@@ -75,13 +77,13 @@ Then, use provided scripts in refindex folder of this repository according to th
 ### STAR indexing
 Syntax : ```sh STAR_refindex.sh <FASTA> <GTF>```  
 ```bash
-sh STAR_refindex.sh ./Ref/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ./Ref/Mus_musculus.GRCm39.108.gtf.gz
+sh STAR_refindex.sh Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz Mus_musculus.GRCm39.108.gtf.gz
 ```
 
 ### RSEM indexing
 Syntax : ```sh RSEM_refindex.sh <FASTA> <GTF> <build_name>```  
 ```bash
-sh RSEM_refindex.sh ./Ref/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ./Ref/Mus_musculus.GRCm39.109.gtf.gz mm39.108
+sh RSEM_refindex.sh Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz Mus_musculus.GRCm39.109.gtf.gz mm39.108
 ```
 
 ## 1. Quality Check
@@ -116,7 +118,7 @@ sh QC.sh Trimmed/Trimmomatic/Paired
 ## 3. Alignment to genome
 Syntax : ```sh STAR.sh <SE|PE> <input_dir> <refindex>```
 ```bash
-sh STAR.sh PE Trimmed/Trimmomatic/Paired ./Ref/refdata-STAR-mm39.108/GenomeDir
+sh STAR.sh PE Trimmed/Trimmomatic/Paired ../Ref/refdata-STAR-mm39.108/GenomeDir
 ```
 ## 4. Quality Check
 Syntax : ```sh QC.sh <input_dir>```  
@@ -127,14 +129,14 @@ Pooled results are available in ./QC/MultiQC/STAR_MultiQC.html file.
 ## 5. Quantification
 Syntax : ```sh Count.sh <SE|PE> <input_dir> <GTF>```
 ```bash
-sh Count.sh PE STAR .Ref/Mus_musculus.GRCm39.108.gtf
+sh Count.sh PE STAR ..Ref/Mus_musculus.GRCm39.108.gtf
 ```
 
 # RSEM Estimation
 ## 3. Transcripts Estimation
 Syntax : ```sh RSEM.sh <SE|PE> <input_dir> <refindex>```   
 ```bash
-sh RSEM.sh PE Trimmed/Trimmomatic/Paired ./Ref/refdata-RSEM-mm39.108/mm39.108
+sh RSEM.sh PE Trimmed/Trimmomatic/Paired ../Ref/refdata-RSEM-mm39.108/mm39.108
 ```  
 ## 4. Quality Check
 Syntax : ```sh QC.sh <input_dir>```  
