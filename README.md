@@ -22,16 +22,16 @@ Two quantification methods are available in this workflow :
 A quality control is carried out on the FASTQ files resulting from trimming to ensure that the quality obtained is satisfactory.
 
 ### STAR Raw Counts Workflow 
-3. **Alignment to the genome :** This step consists of aligning the FASTQ files to the previously indexed reference genome in order to identify the regions from which the reads come. The **STAR** tool thus generates BAM files containing the reads aligned to the genome.
+3. **Alignment to the genome :** This step consists of aligning the FASTQ files to the previously indexed reference genome in order to identify the regions from which the reads come. **STAR** thus generates BAM files containing the reads aligned to the genome.
 
-4. **Alignment Quality Check :** In order to analyze the proportion of correctly aligned reads, the **MultiQC** tool can be directly used to pool the quality control of the BAM files resulting from the alignment.
+4. **Alignment Quality Check :** In order to analyze the proportion of correctly aligned reads, **MultiQC** can be directly used to pool the quality control of the BAM files resulting from the alignment.
 
-5. **Quantification :** This step will transform the BAM files containing the aligned reads into a count table usable for further analyzes in R or Python.
+5. **Quantification :** This step uses **featureCounts** to convert the BAM files containing the aligned reads into a count table usable for further analyzes in R or Python.
 
 ### RSEM Estimation Workflow 
-3. **Transcripts estimation :** This step consists of aligning the FASTQ files to the reference transcriptome previously indexed with **RSEM** to make an estimate of the abundance of each transcript. For each FASTQ file, several files result, in particular a BAM file and a .stat folder which will make it possible to control the quality of the alignment. There are also .genes.results and .isoforms.results files containing respectively the results of the estimation of expression by genes or by transcripts which will be used for further analyzes in R or Python.
+3. **Transcripts estimation :** This step consists of aligning the FASTQ files using **STAR** and **RSEM** to make an estimate of the abundance of each transcript. Resulting .genes.results and .isoforms.results files contain respectively the results of the estimation of expression by genes or by transcripts which will be used for further analyzes in R or Python.
 
-4. **Alignment Quality Check :** In order to analyze the proportion of correctly aligned reads, the **MultiQC** tool can be directly used to pool the quality control of the BAM files resulting from the alignment.
+4. **Alignment Quality Check :** In order to analyze the proportion of correctly aligned reads, **MultiQC** can be directly used to pool the quality control of the BAM files resulting from the alignment.
 
 
 # Initialization and recommendations
