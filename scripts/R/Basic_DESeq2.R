@@ -52,18 +52,28 @@ library(EnhancedVolcano)
 `%!in%` <- Negate(`%in%`)
 
 # Create required directories
-dir.create(file.path(PATH, "Figures"))
-dir.create(file.path(PATH, "Saves"))
-dir.create(file.path(PATH, "Table"))
-dir.create(file.path(paste(PATH, "/Figures", sep = ""), "Heatmaps"))
-dir.create(file.path(paste(PATH, "/Saves", sep = ""), "DESeq2"))
-dir.create(file.path(paste(PATH, "/Saves", sep = ""), "GeneList"))
-dir.create(file.path(paste(PATH, "/Saves/GeneList", sep = ""), "padj"))
-dir.create(file.path(paste(PATH, "/Saves/GeneList", sep = ""), "pval"))
+dir.create(file.path(PATH, 'Figures'))
+dir.create(file.path(PATH, 'Saves'))
+dir.create(file.path(PATH, 'Table'))
+dir.create(file.path(paste0(PATH, '/Figures'), 'Heatmaps'))
+dir.create(file.path(paste0(PATH, '/Saves'), 'DESeq2'))
+dir.create(file.path(paste0(PATH, '/Saves'), 'GeneList'))
+dir.create(file.path(paste0(PATH, '/Saves/GeneList'), 'padj'))
+dir.create(file.path(paste0(PATH, '/Saves/GeneList'), 'pval'))
+
+# Set up path for figures and saves
+PATH_FIG  <- paste0(PATH, '/Figures')
+PATH_SAVE <- paste0(PATH, '/Saves')
+
+
+
+#===============================================================================
+## INPUT -----------------------------------------------------------------------
+#===============================================================================
 
 # Read files
 COUNT <- read.table(paste(INPUT_DIR, '/Count_Table.out', sep = ''), 
-                    sep = '\t', header = TRUE)
+                    sep = '\t', header = TRUE, check.names = F)
 METADATA      <- read.table(SAMPLE_SHEET, sep = ',', header = T)
 COMPARISONS   <- read.csv(COMP_TO_MAKE)
 
@@ -81,6 +91,27 @@ for(i in 1:length(METADATA$File)){
 colnames(Table) <- METADATA$Sample
 rownames(Table) <- COUNT$Geneid
 
+
+# ---------------------------------------------------------------------------- #
+# Changing Ensembl id to GeneSymbol manually
+#Using : https://www.biotools.fr/mouse/ensembl_symbol_converter
+#write.table(rownames(Table), paste0(PATH, '/Saves/manual_gene_index.txt'), 
+#            sep = '\t', quote = FALSE, row.names = FALSE, col.names = FALSE)
+#index <- read.table(paste0(PATH, '/Saves/manual_gene_index.txt'), sep = '\t')
+#
+#gene_id     <- c()
+#for(i in 1:nrow(index)){
+#  if(index[i, 2] == ""){
+#    gene_id <- c(gene_id, index[i, 1])
+#  } else {
+#    gene_id <- c(gene_id, index[i, 2])
+#  }
+#}
+# Add gene symbol
+#Table       <- cbind(Symbol = gene_id, Table)
+# ---------------------------------------------------------------------------- #
+
+
 # Changing Ensembl id to GeneSymbol using org.Mm.eg.db / org.Hs.eg.db
 ID     <- rownames(Table)
 mapped <- mapIds(org.Mm.eg.db, 
@@ -96,6 +127,7 @@ for(j in 1:length(ID)){
   }
 }
 Table <- cbind(Symbol = Symbol, Table)
+Table <- Table[order(rownames(Table)),]
 
 # Save Table
 write.table(Table, paste0(PATH, '/Table/Table_Raw.txt'), 
@@ -110,24 +142,23 @@ write.table(Table, paste0(PATH, '/Table/Table_Raw.txt'),
 # We check if sex-specific genes are expressed consistently across the dataset
 
 # Read table
-#Table <- read.table(paste0(PATH, '/Table/Table_Raw.txt'), 
-#                    sep = '\t', check.names = FALSE)
+Table <- read.table(paste0(PATH, '/Table/Table_Raw.txt'), 
+                    sep = '\t', check.names = FALSE)
 # Set sex specific gene lists and subset Table
-#Female_genes <- c("Xist", "Eif2s3x", "Kdm6a")
-#Male_genes   <- c("Uty", "Eif2s3y", "Kdm5d")
+Female_genes <- c('Xist', 'Eif2s3x', 'Kdm6a')
+Male_genes   <- c('Uty', 'Eif2s3y', 'Kdm5d')
 
-#Table_Sex    <- Table[match(c(Female_genes, Male_genes), Table$Symbol),]
+Table_Sex    <- Table[match(c(Female_genes, Male_genes), Table$Symbol),]
 
 # Draw heatmap
-#heatdata     <- Table_Sex[,2:ncol(Table_Sex)]
-#sex_groups   <- pheatmap(log2(heatdata+1), 
-#                         show_rownames = TRUE, 
-#                         labels_row = c(Female_genes, Male_genes), 
-#                         cluster_rows = F, 
-#                         cluster_cols = F, 
-#                         scale = 'row')
-#ggsave(paste0(PATH, '/Figures/Sex_Analysis.png'), 
-#       sex_groups , width = 9, height = 9)
+heatdata     <- Table_Sex[,2:ncol(Table_Sex)]
+sex_groups   <- pheatmap(log2(heatdata+1), 
+                         show_rownames = TRUE, 
+                         labels_row = c(Female_genes, Male_genes), 
+                         cluster_rows = F, 
+                         cluster_cols = F, 
+                         scale = 'row')
+ggsave(paste0(PATH_FIG, '/Sex_Analysis.png'), sex_groups, width = 9, height = 9)
 
 
 
@@ -146,8 +177,8 @@ plot_list        <- list()
 for(g in names(table(METADATA$Group))){
   heatdata       <- Table[,as.character(METADATA$Sample[METADATA$Group %in% g])]
   heatdata$count <- apply(heatdata, 1, sum)
-  # Eliminate low expressed genes
-  heatdata       <- subset(heatdata, count > 8)
+  # Eliminate low expressed genes (use custom threshold)
+  heatdata       <- subset(heatdata, count > ncol(heatdata))
   heatdata$count <- NULL
   plot_list[[g]] <- pheatmap(log2(heatdata+1), 
                              show_rownames = FALSE, 
@@ -156,7 +187,7 @@ for(g in names(table(METADATA$Group))){
 }
 # Save heatmaps as png files
 for(g in names(table(METADATA$Group))){
-  png(paste0(PATH, '/Figures/Heatmaps/group_', g, '.png'), 
+  png(paste0(PATH_FIG, '/Heatmaps/group_', g, '.png'), 
       width = 9, height = 9, units = "in", res = 100)
   print(plot_list[[g]])
   dev.off()
@@ -168,7 +199,7 @@ for(g in names(table(METADATA$Group))){
 # Eliminate low row values
 pheatdata       <- Table[,2:ncol(Table)]
 pheatdata$count <- apply(pheatdata, 1, sum)
-pheatdata       <- subset(pheatdata, count > 10)
+pheatdata       <- subset(pheatdata, count > ncol(pheatdata))
 pheatdata$count <- NULL
 
 # Save heatmap with all groups
@@ -178,8 +209,8 @@ all_groups <- pheatmap(log2(pheatdata+1),
                        treeheight_col = 25, 
                        cluster_cols = TRUE)
 
-png(paste0(PATH, '/Figures/Heatmaps/all_groups.png'), 
-    width = 9, height = 9, units = "in", res = 100)
+png(paste0(PATH_FIG, '/Heatmaps/all_groups.png'), 
+    width = 9, height = 9, units = 'in', res = 100)
 print(all_groups)
 dev.off()
 
@@ -192,8 +223,8 @@ dist               <- dist(dendodata[ ,c(1:ncol(dendodata))] ,
 hc                 <- hclust(dist)
 plot(hc, main = '', xlab = 'Samples', sub = '')
 
-png(paste0(PATH, '/Figures/dendro.png'), 
-    width = 9, height = 9, units = "in", res = 100)
+png(paste0(PATH_FIG, '/dendro.png'), 
+    width = 9, height = 9, units = 'in', res = 100)
 plot(hc, main = "", xlab = 'Samples', sub = '')
 dev.off()
 
@@ -214,7 +245,7 @@ dds@assays@data@listData[['normalized']] <- data
 dds        <- DESeq(dds)
 
 # Saving DDS object
-saveRDS(dds, paste(PATH, '/Saves/DESeq2_DDS.rds', sep = ''))
+saveRDS(dds, paste0(PATH_SAVE, '/DESeq2_DDS.rds'))
 
 # Save Normalized Table
 Table_norm <- cbind(Symbol = Table[,1], 
@@ -236,8 +267,8 @@ for(g in names(table(METADATA$Group))){
   heatdata <- as.data.frame(dds@assays@data[['normalized']][
     ,as.character(METADATA$Sample[METADATA$Group %in% g])])
   heatdata$count <- apply(heatdata, 1, sum)
-  # Eliminate low expressed genes
-  heatdata       <- subset(heatdata, count > ncol(heatdata)-1)
+  # Eliminate low expressed genes (use custom threshold)
+  heatdata       <- subset(heatdata, count > ncol(heatdata))
   heatdata$count <- NULL
   plot_list[[g]] <- pheatmap(log2(heatdata+1), 
                              show_rownames = FALSE, 
@@ -247,8 +278,8 @@ for(g in names(table(METADATA$Group))){
 }
 # Save heatmaps as png files
 for(g in names(table(METADATA$Group))){
-  png(paste0(PATH, '/Figures/Heatmaps/group_', g, '_norm.png'),
-      width = 9, height = 9, units = "in", res = 100)
+  png(paste0(PATH_FIG, '/Heatmaps/group_', g, '_norm.png'),
+      width = 9, height = 9, units = 'in', res = 100)
   print(plot_list[[g]])
   dev.off()
 }
@@ -257,7 +288,7 @@ for(g in names(table(METADATA$Group))){
 
 pheatdata       <- as.data.frame(dds@assays@data[['normalized']])
 pheatdata$count <- apply(pheatdata, 1, sum)
-pheatdata       <- subset(pheatdata, count > ncol(heatdata)-1)
+pheatdata       <- subset(pheatdata, count > ncol(pheatdata))
 pheatdata$count <- NULL
 
 # Save heatmap with all groups
@@ -267,8 +298,8 @@ all_groups_norm <- pheatmap(log2(pheatdata + 1),
                             treeheight_col = 25, 
                             cluster_cols = TRUE)
 
-png(paste0(PATH, '/Figures/Heatmaps/all_groups_norm.png'), 
-    width = 9, height = 9, units = "in", res = 100)
+png(paste0(PATH_FIG, '/Heatmaps/all_groups_norm.png'), 
+    width = 9, height = 9, units = 'in', res = 100)
 print(all_groups_norm)
 dev.off()
 
@@ -281,9 +312,9 @@ hc                 <- hclust(dist)
 plot(hc, main = '', xlab = 'Samples', sub = '')
 
 # Save dendrogram of samples
-png(paste0(PATH, '/Figures/dendro_norm.png'), 
-    width = 9, height = 9, units = "in", res = 100)
-plot(hc, main = "", xlab = "Samples", sub = "")
+png(paste0(PATH_FIG, '/dendro_norm.png'), 
+    width = 9, height = 9, units = 'in', res = 100)
+plot(hc, main = "", xlab = 'Samples', sub = '')
 dev.off()
 
 
@@ -295,98 +326,53 @@ dev.off()
 # Load Table and DDS object
 Table <- read.table(paste0(PATH, '/Table/Table_Raw.txt'), 
                     sep = '\t', check.names = FALSE)
-dds   <- readRDS(paste0(PATH, '/Saves/DESeq2_DDS.rds'))
-
-## PREPARE FILTER --------------------------------------------------------------
-# Can be adapted depending on number of samples/conditions
-
-# 1) First, genes expressed at a level under a threshold are isolated
-thr       <- 20
-low_expr  <- names(rowSums(Table[,2:ncol(Table)])[
-  rowSums(Table[,2:ncol(Table)]) < thr])
-
-# 2) Then, genes not expressed in at least one sample of each group are appened
-eliminate <- low_expr
-# Generate a subtable with keeped genes for each group
-group_subtable <- list()
-for(g in names(table(METADATA$Group))){
-  group_subtable[[g]] <- Table[
-    rownames(Table) %!in% low_expr, 
-    as.character(METADATA$Sample[METADATA$Group %in% g])]
-}
-# For each gene, check if 0 is present in all groups. If so, exclude this gene
-for(r in rownames(group_subtable[[1]])){
-  i = 1
-  do_exclude <- TRUE
-  while((i <= length(group_subtable)) & do_exclude){
-    if(0 %!in% group_subtable[[i]][r,]){
-      do_exclude <- FALSE
-    }
-    i <- i+1
-  }
-  if(do_exclude){
-    eliminate <- c(eliminate, r)
-  }
-}
-
-# Save eliminated genes
-write.table(data.frame(Gene_ID = eliminate,
-                       Gene_Symbol = Table$Symbol[
-                         rownames(Table) %in% eliminate]),
-            paste0(PATH, '/Saves/Eliminated_Genes.txt'),
-            col.names = F,
-            row.names = F, 
-            quote = F)
-eliminate <- read.table(paste0(PATH, '/Saves/Eliminated_Genes.txt'))[,1]
+dds   <- readRDS(paste0(PATH_SAVE, '/DESeq2_DDS.rds'))
 
 
 ## DEG ANALYSIS ----------------------------------------------------------------
 
-full_res      <- list()
-filtered_res  <- list()
-plot_num      <- 1
+res   <- list()
 
 for( i in 1:nrow(COMPARISONS)){
   
   # Set current comparison members
   control <- COMPARISONS$Control[i] 
   tested  <- COMPARISONS$Tested[i]
-  title   <- paste0(tested, "VS", control)
+  title   <- paste(tested, 'vs', control, sep = '_')
   
   # Full Result list, adding Symbols and reorder list
-  full_res[[i]] <- results(dds, contrast = c("Group", tested, control))
-  new.order                     <- c("Symbol", names(full_res[[i]]@listData))
-  full_res[[i]]@listData$Symbol <- mcols(dds)$Symbol 
-  full_res[[i]]@listData        <- full_res[[i]]@listData[new.order]
+  res[[title]] <- results(dds, contrast = c('Group', tested, control))
+  new.order                <- c('Symbol', names(res[[i]]@listData))
+  res[[title]]@listData$Symbol <- mcols(dds)$Symbol 
+  res[[title]]@listData        <- res[[i]]@listData[new.order]
   
   # Filtered Result list for volcano plots and store corresponding Symbols
-  filtered_res[[i]] <- results(subset(dds, rownames(dds) %!in% eliminate), 
-                               contrast = c("Group", tested, control))
-  Symbol <- mcols((subset(dds, rownames(dds) %!in% eliminate)))$Symbol
+  #filtered_res[[i]] <- results(subset(dds, rownames(dds) %!in% eliminate), 
+  #                             contrast = c('Group', tested, control))
+  #Symbol <- mcols((subset(dds, rownames(dds) %!in% eliminate)))$Symbol
   
   
   # PLOT MA -------------------------------------------------------------------
   
-  ggplot(as.data.frame(full_res[[i]]@listData), 
+  ggplot(as.data.frame(res[[title]]@listData), 
          aes(x = log10(as.numeric(baseMean)), y = as.numeric(log2FoldChange))) +
     geom_point() + 
     ggtitle(title) +
     labs(x = 'Log10(baseMean)', y = 'Log2 FoldChange')
   # Save plotMA
-  ggsave(paste0(PATH, '/Figures/plot', plot_num, '.png'), 
+  ggsave(paste0(PATH_FIG, '/', title, '_MAplot.png'), 
          width = 2500, height = 2000, units = "px")
-  plot_num <- plot_num + 1
   
   
   ## VOLCANO PLOT WITH PVALUE --------------------------------------------------
   
   # Attribute a color for each gene
   keyvals <- ifelse(
-    filtered_res[[i]]@listData[["log2FoldChange"]] < -1 & 
-      filtered_res[[i]]@listData[["pvalue"]] < 0.05, 'royalblue',
+    res[[title]]@listData[['log2FoldChange']] < -1 & 
+      res[[title]]@listData[['pvalue']] < 0.05, 'royalblue',
     ifelse(
-      filtered_res[[i]]@listData[["log2FoldChange"]] > 1 & 
-        filtered_res[[i]]@listData[["pvalue"]] < 0.05, 'red',
+      res[[title]]@listData[['log2FoldChange']] > 1 & 
+        res[[title]]@listData[['pvalue']] < 0.05, 'red',
       'grey'))
   # Attribute corresponding legend
   keyvals[is.na(keyvals)]                <- 'grey'
@@ -394,7 +380,7 @@ for( i in 1:nrow(COMPARISONS)){
   names(keyvals)[keyvals == 'grey']      <- 'NS'
   names(keyvals)[keyvals == 'royalblue'] <- 'Down'
   # Draw Volcano plot
-  EnhancedVolcano(filtered_res[[i]]@listData, lab = Symbol, 
+  EnhancedVolcano(res[[title]]@listData, lab = Symbol, 
                   x = 'log2FoldChange', y = 'pvalue', 
                   title = title, subtitle = '', legendPosition = 'right',
                   selectLab = Symbol[which(names(keyvals) %in% c('Up','Down'))],
@@ -403,20 +389,19 @@ for( i in 1:nrow(COMPARISONS)){
                   ylab = bquote(~-Log[10] ~ italic(Pvalue)))
   
   # Save volcano plot
-  ggsave(paste0(PATH, '/Figures/plot', plot_num, '.png'), 
-         width = 3000, height = 2500, units = "px")
-  plot_num <- plot_num + 1
+  ggsave(paste0(PATH_FIG, '/', title, '_Volcano_pval.png'), 
+         width = 3000, height = 2500, units = 'px')
   
   
   ## VOLCANO PLOT WITH PADJUSTED VALUE -----------------------------------------
   
   # Attribute a color for each gene
   keyvals <- ifelse(
-    filtered_res[[i]]@listData[["log2FoldChange"]] < -1 & 
-      filtered_res[[i]]@listData[["padj"]] < 0.05, 'royalblue',
+    res[[title]]@listData[['log2FoldChange']] < -1 & 
+      res[[title]]@listData[['padj']] < 0.05, 'royalblue',
     ifelse(
-      filtered_res[[i]]@listData[["log2FoldChange"]] > 1 & 
-        filtered_res[[i]]@listData[["padj"]] < 0.05, 'red',
+      res[[title]]@listData[['log2FoldChange']] > 1 & 
+        res[[title]]@listData[['padj']] < 0.05, 'red',
       'grey'))
   # Attribute corresponding legend
   keyvals[is.na(keyvals)]                <- 'grey'
@@ -424,7 +409,7 @@ for( i in 1:nrow(COMPARISONS)){
   names(keyvals)[keyvals == 'grey']      <- 'NS'
   names(keyvals)[keyvals == 'royalblue'] <- 'Down'
   # Draw Volcano plot
-  EnhancedVolcano(filtered_res[[i]]@listData, lab = Symbol, 
+  EnhancedVolcano(res[[title]]@listData, lab = Symbol, 
                   x = 'log2FoldChange', y = 'padj', 
                   title = title, subtitle = '',
                   legendPosition = 'right',
@@ -434,46 +419,44 @@ for( i in 1:nrow(COMPARISONS)){
                   colCustom = keyvals, colAlpha = 1,
                   ylab = bquote(~-Log[10] ~ italic(Padj)))
   # Save volcano plot
-  ggsave(paste0(PATH, '/Figures/plot', plot_num, '.png'),
-         width = 3000, height = 2500, units = "px")
-  plot_num <- plot_num + 1
+  ggsave(paste0(PATH_FIG, '/', title, '_Volcano_padj.png'),
+         width = 3000, height = 2500, units = 'px')
   
   
   ## SAVE STATISTICAL RESULTS --------------------------------------------------
   
   # Result Table of genes of interest
-  write.table(full_res[[i]]@listData, 
-              paste0(PATH, '/Saves/DESeq2/', tested, "_vs_", control, '.txt'), 
-              sep = '\t', row.names = full_res[[i]]@rownames, quote = FALSE)
+  write.table(res[[title]]@listData, 
+              paste0(PATH_SAVE, '/DESeq2/', title, '.txt'), 
+              sep = '\t', row.names = res[[title]]@rownames, quote = FALSE)
 }
 
+# Save file listing all results
+saveRDS(res, paste0(PATH_SAVE, '/DESeq2_Res.RDS'))
 
 
 #===============================================================================
 ## FINAL RESULTS FORMAT --------------------------------------------------------
 #===============================================================================
 
-files_res <- list.files(paste(PATH, "/Saves/DESeq2", sep = ""), full.names = F) 
+res <- readRDS(paste0(PATH_SAVE, '/DESeq2_Res.RDS'))
 
 
 ## FINAL GENE LISTS ------------------------------------------------------------
 
-for(file in files_res){
-  # Reading saved DESeq2 stat tables, remove NA and set filename
-  x    <- read.table(paste0(PATH, '/Saves/DESeq2/', file), 
-                     sep = '\t', check.names = FALSE)
-  y    <- x[!(is.na(x$log2FoldChange) | is.na(x$pvalue)),]
-  name <- str_remove(file, '.txt')
+for(i in 1:length(res)){
+  # Reading saved DESeq2 stat tables
+  y    <- as.data.frame(res[[i]]@listData)
+  name <- names(res)[i]
   
-  
-  ## P-VALUE TABLE
+  ## P-VALUE GENE LISTS
   up_pval   <- unique(y$Symbol[y$log2FoldChange > 1 & y$pvalue < 0.05])
   down_pval <- unique(y$Symbol[y$log2FoldChange < -1 & y$pvalue < 0.05])
   final_list_pval <- data.frame(gene = c(up_pval, down_pval), 
-                                expression = c(rep("UP", length(up_pval)), 
-                                               rep("DOWN", length(down_pval))))
+                                expression = c(rep('UP', length(up_pval)), 
+                                               rep('DOWN', length(down_pval))))
   
-  write.table(up_pval, paste0(PATH, '/Saves/GeneList/pval/',
+  write.table(up_pval, paste0(PATH_SAVE, '/GeneList/pval/',
                               name, '_UP_pval.txt'), 
               sep = '\t', quote = FALSE, row.names = FALSE, col.names = F)
   write.table(down_pval, paste0(PATH, '/Saves/GeneList/pval/', 
@@ -481,57 +464,50 @@ for(file in files_res){
               sep = '\t', quote = FALSE, row.names = FALSE, col.names = F)
   
   
-  ## P-ADJ TABLE  
+  ## P-ADJ GENE LISTS 
   up_padj   <- unique(y$Symbol[y$log2FoldChange > 1 & 
                                  y$padj < 0.05 & !is.na(y$padj)])
   down_padj <- unique(y$Symbol[y$log2FoldChange < -1 & 
                                  y$padj < 0.05 & !is.na(y$padj)])
   final_list_padj <- data.frame(gene = c(up_padj, down_padj), 
-                                expression = c(rep("UP", length(up_padj)), 
-                                               rep("DOWN", length(down_padj))))  
+                                expression = c(rep('UP', length(up_padj)), 
+                                               rep('DOWN', length(down_padj))))  
   
   write.table(up_padj, 
-              paste0(PATH, '/Saves/GeneList/padj/', name, '_UP_adj.txt'), 
+              paste0(PATH_SAVE, '/GeneList/padj/', name, '_UP_adj.txt'), 
               sep = '\t', quote = FALSE, row.names = FALSE, col.names = F)
   write.table(down_padj, 
-              paste0(PATH, '/Saves/GeneList/padj/', name, '_DOWN_padj.txt'), 
+              paste0(PATH_SAVE, '/GeneList/padj/', name, '_DOWN_padj.txt'), 
               sep = '\t', quote = FALSE, row.names = FALSE, col.names = F)
-  
-  ## Complete tables
-  write.table(final_list_pval, 
-              paste0(PATH, '/Saves/GeneList/GeneList_pval_', i, '.txt'), 
-              sep = '\t', quote = FALSE, row.names = FALSE, col.names = TRUE)
-  write.table(final_list_padj, 
-              paste0(PATH, '/Saves/GeneList/GeneList_padj_', i, '.txt'), 
-              sep = '\t', quote = FALSE, row.names = FALSE, col.names = TRUE)
 }
 
 
 
-## TABLE WORKED FORMAT ---------------------------------------------------------
+## RESULT TABLE FORMAT ---------------------------------------------------------
 
-Table_worked <- as.data.frame(read.table(paste0(PATH, '/Table/Table_Norm.txt'), 
+Table_Results <- as.data.frame(read.table(paste0(PATH, '/Table/Table_Norm.txt'), 
                                          check.names = FALSE))
-
 # Add groups mean
 for(g in names(table(METADATA$Group))){
-  x <- Table_worked[,as.character(METADATA$Sample[METADATA$Group %in% g])]
-  Table_worked[,paste("mean_", g, sep = "")] <- apply(x, 1, mean)
+  x <- Table_Results[,as.character(METADATA$Sample[METADATA$Group %in% g])]
+  Table_Results[,paste0('mean_', g)] <- apply(x, 1, mean)
 }
 
 # Add DESeq2 stats
-for(file in files_res){
-  x <- read.table(paste0(PATH, '/Saves/DESeq2/', file), 
-                  sep = '\t', check.names = FALSE)
-  name <- str_remove(file, '.txt')
-  Table_worked[,paste(name, "log2FC", sep = "_")] <- x$log2FoldChange 
-  Table_worked[,paste(name, "pval", sep = "_")]   <- x$pvalue
-  Table_worked[,paste(name, "padj", sep = "_")]   <- x$padj
+for(i in 1:length(res)){
+  # Reading saved DESeq2 stat tables
+  x    <- as.data.frame(res[[i]]@listData)
+  name <- names(res)[i]
+  
+  Table_Results[,paste(name, 'log2FC', sep = '_')] <- x$log2FoldChange 
+  Table_Results[,paste(name, 'pval', sep = '_')]   <- x$pvalue
+  Table_Results[,paste(name, 'padj', sep = '_')]   <- x$padj
 }
 
 # Save complete table regrouping all important informations
-write.table(Table_worked, paste0(PATH, '/Table/Table_Worked.txt'), 
+write.table(Table_Results, paste0(PATH, '/Table/Table_Results.txt'), 
             sep = '\t', quote = FALSE, row.names = TRUE, col.names = TRUE)
+
 
 
 
