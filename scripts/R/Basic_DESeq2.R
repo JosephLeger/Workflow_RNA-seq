@@ -10,8 +10,7 @@
 
 ## CUSTOMIZATION ##
 # All you have to do is replacing information in PROJECT INFO section, with your
-# own folder pathways, and later in the process, manually annotate gene symbols
-# from Ensembl ID using online converter.
+# own folder pathways.
 # In DESEQ2 DEG ANALYSIS section, you can modify filter conditions too based on
 # your own data distribution, or even apply customized filtering functions.
 
@@ -82,23 +81,6 @@ for(i in 1:length(METADATA$File)){
 colnames(Table) <- METADATA$Sample
 rownames(Table) <- COUNT$Geneid
 
-# Changing Ensembl id to GeneSymbol manually
-#Using : https://www.biotools.fr/mouse/ensembl_symbol_converter
-#write.table(rownames(Table), paste0(PATH, '/Saves/manual_gene_index.txt'), 
-#            sep = '\t', quote = FALSE, row.names = FALSE, col.names = FALSE)
-#index <- read.table(paste0(PATH, '/Saves/manual_gene_index.txt'), sep = '\t')
-#
-#gene_id     <- c()
-#for(i in 1:nrow(index)){
-#  if(index[i, 2] == ""){
-#    gene_id <- c(gene_id, index[i, 1])
-#  } else {
-#    gene_id <- c(gene_id, index[i, 2])
-#  }
-#}
-# Add gene symbol
-#Table       <- cbind(Symbol = gene_id, Table)
-
 # Changing Ensembl id to GeneSymbol using org.Mm.eg.db / org.Hs.eg.db
 ID     <- rownames(Table)
 mapped <- mapIds(org.Mm.eg.db, 
@@ -128,25 +110,24 @@ write.table(Table, paste0(PATH, '/Table/Table_Raw.txt'),
 # We check if sex-specific genes are expressed consistently across the dataset
 
 # Read table
-Table <- read.table(paste0(PATH, '/Table/Table_Raw.txt'), 
-                    sep = '\t', check.names = FALSE)
-
+#Table <- read.table(paste0(PATH, '/Table/Table_Raw.txt'), 
+#                    sep = '\t', check.names = FALSE)
 # Set sex specific gene lists and subset Table
-Female_genes <- c("Xist", "Eif2s3x", "Kdm6a")
-Male_genes   <- c("Uty", "Eif2s3y", "Kdm5d")
+#Female_genes <- c("Xist", "Eif2s3x", "Kdm6a")
+#Male_genes   <- c("Uty", "Eif2s3y", "Kdm5d")
 
-Table_Sex    <- Table[match(c(Female_genes, Male_genes), Table$Symbol),]
+#Table_Sex    <- Table[match(c(Female_genes, Male_genes), Table$Symbol),]
 
 # Draw heatmap
-heatdata     <- Table_Sex[,2:ncol(Table_Sex)]
-sex_groups   <- pheatmap(log2(heatdata+1), 
-                         show_rownames = TRUE, 
-                         labels_row = c(Female_genes, Male_genes), 
-                         cluster_rows = F, 
-                         cluster_cols = F, 
-                         scale = 'row')
-ggsave(paste0(PATH, '/Figures/Sex_Analysis.png'), 
-       sex_groups , width = 9, height = 9)
+#heatdata     <- Table_Sex[,2:ncol(Table_Sex)]
+#sex_groups   <- pheatmap(log2(heatdata+1), 
+#                         show_rownames = TRUE, 
+#                         labels_row = c(Female_genes, Male_genes), 
+#                         cluster_rows = F, 
+#                         cluster_cols = F, 
+#                         scale = 'row')
+#ggsave(paste0(PATH, '/Figures/Sex_Analysis.png'), 
+#       sex_groups , width = 9, height = 9)
 
 
 
@@ -256,7 +237,7 @@ for(g in names(table(METADATA$Group))){
     ,as.character(METADATA$Sample[METADATA$Group %in% g])])
   heatdata$count <- apply(heatdata, 1, sum)
   # Eliminate low expressed genes
-  heatdata       <- subset(heatdata, count > 8)
+  heatdata       <- subset(heatdata, count > ncol(heatdata)-1)
   heatdata$count <- NULL
   plot_list[[g]] <- pheatmap(log2(heatdata+1), 
                              show_rownames = FALSE, 
@@ -276,7 +257,7 @@ for(g in names(table(METADATA$Group))){
 
 pheatdata       <- as.data.frame(dds@assays@data[['normalized']])
 pheatdata$count <- apply(pheatdata, 1, sum)
-pheatdata       <- subset(pheatdata, count > 10)
+pheatdata       <- subset(pheatdata, count > ncol(heatdata)-1)
 pheatdata$count <- NULL
 
 # Save heatmap with all groups
@@ -320,8 +301,9 @@ dds   <- readRDS(paste0(PATH, '/Saves/DESeq2_DDS.rds'))
 # Can be adapted depending on number of samples/conditions
 
 # 1) First, genes expressed at a level under a threshold are isolated
+thr       <- 20
 low_expr  <- names(rowSums(Table[,2:ncol(Table)])[
-  rowSums(Table[,2:ncol(Table)]) < 6])
+  rowSums(Table[,2:ncol(Table)]) < thr])
 
 # 2) Then, genes not expressed in at least one sample of each group are appened
 eliminate <- low_expr
