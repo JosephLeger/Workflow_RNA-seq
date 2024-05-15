@@ -34,7 +34,7 @@ A quality control is carried out on the FASTQ files resulting from trimming to e
 4. **Alignment Quality Check :** In order to analyze the proportion of correctly aligned reads, **MultiQC** can be directly used to pool the quality control of the BAM files resulting from the alignment.
 
 ### Post-Processing Data Analysis
-Following data analyzes are performed locally using R or Python. A complete script for basic DESeq2 analysis is provided in R script folder.  
+Following data analyzes are performed locally using R or Python. A complete script for basic DESeq2 analysis while performing STAR Raw Counts Workflow is provided in R script folder.  
 
 # Initialization and recommendations
 
