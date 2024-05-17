@@ -142,9 +142,11 @@ sh Count.sh PE STAR ../Ref/Genome/Mus_musculus.GRCm39.108.gtf
 
 # RSEM Estimation
 ## 3. Transcripts Estimation
-Syntax : ```sh RSEM.sh <SE|PE> <input_dir> <refindex>```   
+Because RSEM will generate specific files after the estimation of the expression, it is possible to ignore output BAM files generation using **-B false** option.  
+This could be usefull to avoid saturation of disk storage space.  
+Syntax : ```sh RSEM.sh [options] <SE|PE> <input_dir> <refindex>```   
 ```bash
-sh RSEM.sh PE Trimmed/Trimmomatic/Paired ../Ref/refdata-RSEM-mm39.108/mm39.108
+sh RSEM.sh -B false PE Trimmed/Trimmomatic/Paired ../Ref/refdata-RSEM-mm39.108/mm39.108
 ```  
 ## 4. Quality Check
 Syntax : ```sh QC.sh <input_dir>```  
