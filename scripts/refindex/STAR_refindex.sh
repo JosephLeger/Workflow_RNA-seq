@@ -14,7 +14,7 @@ Help()
 {
 echo -e "${BOLD}####### STAR_REFINDEX MANUAL #######${END}\n\n\
 ${BOLD}SYNTHAX${END}\n\
-    sh STAR_refindex.sh <fasta_file> <gtf_file>\n\n\
+    sh ${script_name} <fasta_file> <gtf_file>\n\n\
 
 ${BOLD}DESCRIPTION${END}\n\
     Index reference genome from FASTA and GTF files for STAR.\n\n\
@@ -40,8 +40,8 @@ if [ $# -eq 1 ] && [ $1 == "help" ]; then
     exit
 elif [ $# -ne 2 ]; then
     # Error if inoccrect number of agruments is provided
-    echo 'Error synthax : please use following synthax'
-    echo '       sh ${script_name} <fasta_file> <gtf_file>'
+    echo "Error synthax : please use following synthax"
+    echo "       sh ${script_name} <fasta_file> <gtf_file>"
     exit
 elif [ ! -f "$1" ]; then
     echo "Error : FASTA file not found. Please make sure provided pathway is correct."
