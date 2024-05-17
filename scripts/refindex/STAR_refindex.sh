@@ -28,7 +28,7 @@ ${BOLD}ARGUMENTS${END}\n\
         It can usually be downloaded from Ensembl genome browser.\n\n\
 
 ${BOLD}EXAMPLE USAGE${END}\n\
-    sh ${script_name} ${BOLD}../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa ../Genome/Mus_musculus.GRCm39.108.gtf${END}\n"
+    sh ${script_name} ${BOLD}../Ref/Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa ../Ref/Genome/Mus_musculus.GRCm39.108.gtf${END}\n"
 }
 
 ################################################################################################################
