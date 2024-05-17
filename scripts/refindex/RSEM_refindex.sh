@@ -30,7 +30,7 @@ ${BOLD}ARGUMENTS${END}\n\
         Define a name for making refseq. It is used as prefix for generated files, and will be important for calling refseq during alignment step.\n\n\
         
 ${BOLD}EXAMPLE USAGE${END}\n\
-    sh ${script_name} ${BOLD}../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa ../Genome/Mus_musculus.GRCm39.108.gtf mm39${END}\n"
+    sh ${script_name} ${BOLD}../Ref/Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa ../Ref/Genome/Mus_musculus.GRCm39.108.gtf mm39${END}\n"
 }
 
 ################################################################################################################
