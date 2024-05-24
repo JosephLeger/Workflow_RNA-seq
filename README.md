@@ -40,7 +40,7 @@ Following data analyzes are performed locally using R or Python. A complete scri
 
 ### Scripts
 All required scripts are available in the script folder in this directory.   
-To get more information about using these scripts, enter the command `sh <script.sh> help`.  
+To get more information about using these scripts, enter the command `sh <script_name.sh> help`.  
 
 ### Environments  
 The workflow is encoded in Shell language and is supposed to be launched under a Linux environment.  
