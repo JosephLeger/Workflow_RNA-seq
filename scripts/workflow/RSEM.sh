@@ -149,7 +149,7 @@ if [ $1 == "SE" ]; then
 		output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/\.fastq\.gz\|\.fq\.gz//g'`
 		# Define JOBNAME and COMMAND and launch job
 		JOBNAME=RSEM_${1}_${output}
-		COMMAND="rsem-calculate-expression -p 8 --star --star-gzipped-read-file $i $3 ${outdir}/${output} ${B_arg}--sort-bam-by-coordinate"
+		COMMAND="rsem-calculate-expression -p 8 --star --star-gzipped-read-file $i $3 ${outdir}/${output} ${B_arg}"
 		Launch
 		# Append SampleSheet
 		echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv       
@@ -166,7 +166,7 @@ elif [ $1 == "PE" ]; then
 		output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/_R1//g' | sed -e 's/\.fastq\.gz\|\.fq\.gz//g'`
 		# Define JOBNAME and COMMAND and launch job
 		JOBNAME="RSEM_${1}_${output}"
-		COMMAND="rsem-calculate-expression -p 8 --paired-end --star --star-gzipped-read-file $R1 $R2 $3 ${outdir}/${output} ${B_arg}--sort-bam-by-coordinate"
+		COMMAND="rsem-calculate-expression -p 8 --paired-end --star --star-gzipped-read-file $R1 $R2 $3 ${outdir}/${output} ${B_arg}"
 		Launch
 		# Append SampleSheet
 		echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv
