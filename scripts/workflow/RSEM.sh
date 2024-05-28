@@ -68,7 +68,7 @@ done
 # Checking if provided option values are correct
 case $B_arg in
 	True|true|TRUE|T|t) 
-	        B_arg='--output-genome-bam ';;
+	        B_arg='--output-genome-bam --append-names --sort-bam-by-coordinate';;
 	False|false|FALSE|F|f) 
 		B_arg='--no-bam-output ';;
 	*)
@@ -118,6 +118,7 @@ fi
 ## SETUP - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 module load rsem/1.3.2
 module load star/2.7.5a
+module load samtools/1.15.1
 
 # Generate REPORT
 echo '#' >> ./0K_REPORT.txt
