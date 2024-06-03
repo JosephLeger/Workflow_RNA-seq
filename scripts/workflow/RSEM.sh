@@ -68,7 +68,7 @@ done
 # Checking if provided option values are correct
 case $B_arg in
 	True|true|TRUE|T|t) 
-	        B_arg='--output-genome-bam --append-names --sort-bam-by-coordinate';;
+	        B_arg='--output-genome-bam --append-names';;
 	False|false|FALSE|F|f) 
 		B_arg='--no-bam-output ';;
 	*)
