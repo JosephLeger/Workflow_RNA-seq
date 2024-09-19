@@ -27,7 +27,7 @@ ${BOLD}DESCRIPTION${END}\n\
 ${BOLD}OPTIONS${END}\n\
 	${BOLD}-B${END} ${UDL}boolean${END}, ${BOLD}B${END}amOutput\n\
 		Define whether STAR genome-mapped  output BAM files have to been generated. \n\
-		Default = true\n\n\
+		Default = false\n\n\
 	${BOLD}-A${END} ${UDL}boolean${END}, ${BOLD}A${END}ppendNames\n\
 		Define whether gene/transcript name must be added after Ensembl ID in result rownames. \n\
 		Default = false\n\n\
@@ -45,7 +45,7 @@ ${BOLD}ARGUMENTS${END}\n\
         	Provided path must be ended by reference name (prefix common to files).\n\n\
 
 ${BOLD}EXAMPLE USAGE${END}\n\
-	sh RSEM.sh ${BOLD}-B${END} false ${BOLD}PE Trimmed/Trimmomatic/Paired ${usr}/Ref/refdata-RSEM-mm39.108/mm39.108${END}\n"
+	sh RSEM.sh ${BOLD}-B${END} true ${BOLD}-A${END} false ${BOLD}PE Trimmed/Trimmomatic/Paired ${usr}/Ref/refdata-RSEM-mm39.108/mm39.108${END}\n"
 }
 
 ################################################################################################################
@@ -53,7 +53,7 @@ ${BOLD}EXAMPLE USAGE${END}\n\
 ################################################################################################################
 
 # Set default values
-B_arg='true'
+B_arg='false'
 A_arg='false'
 
 # Change default values if another one is precised
