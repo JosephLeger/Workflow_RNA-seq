@@ -27,8 +27,11 @@ ${BOLD}DESCRIPTION${END}\n\
 ${BOLD}OPTIONS${END}\n\
 	${BOLD}-B${END} ${UDL}boolean${END}, ${BOLD}B${END}amOutput\n\
 		Define whether STAR genome-mapped  output BAM files have to been generated. \n\
-		Default = True\n\n\
-
+		Default = true\n\n\
+	${BOLD}-A${END} ${UDL}boolean${END}, ${BOLD}A${END}ppendNames\n\
+		Define whether gene/transcript name must be added after Ensembl ID in result rownames. \n\
+		Default = false\n\n\
+ 
 ${BOLD}ARGUMENTS${END}\n\
 	${BOLD}<SE|PE>${END}\n\
         	Define whether FASTQ files are Single-End (SE) or Paired-End (PE).\n\
@@ -50,16 +53,19 @@ ${BOLD}EXAMPLE USAGE${END}\n\
 ################################################################################################################
 
 # Set default values
-B_arg='True'
+B_arg='true'
+A_arg='false'
 
 # Change default values if another one is precised
-while getopts ":B:" option; do
+while getopts ":B:A:" option; do
 	case $option in
 		B) # BAM OUTPUT FILES
 			B_arg=${OPTARG};;
+		A) # APPEND NAMES
+			A_arg=${OPTARG};;
 		\?) # Error
 			echo "Error : invalid option"
-			echo "      Allowed options are [-B]"
+			echo "      Allowed options are [-B|-A]"
 			echo "      Enter 'sh ${script_name} help' for more details"
 			exit;;
 	esac
@@ -68,15 +74,24 @@ done
 # Checking if provided option values are correct
 case $B_arg in
 	True|true|TRUE|T|t) 
-	        B_arg='--output-genome-bam --append-names';;
+	        B_arg='--output-genome-bam ';;
 	False|false|FALSE|F|f) 
 		B_arg='--no-bam-output ';;
 	*)
 		echo "Error value : -B argument must be 'true' or 'false'"
-	exit;;
+		exit;;
+esac
+case $A_arg in
+	True|true|TRUE|T|t) 
+	        A_arg='--append-names ';;
+	False|false|FALSE|F|f) 
+		A_arg='';;
+	*)
+		echo "Error value : -A argument must be 'true' or 'false'"
+		exit;;
 esac
 
-# Deal with options [-B] and arguments [$1|$2]
+# Deal with options [-B|-A] and arguments [$1|$2]
 shift $((OPTIND-1))
 
 ################################################################################################################
@@ -150,7 +165,7 @@ if [ $1 == "SE" ]; then
 		output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/\.fastq\.gz\|\.fq\.gz//g'`
 		# Define JOBNAME and COMMAND and launch job
 		JOBNAME=RSEM_${1}_${output}
-		COMMAND="rsem-calculate-expression -p 8 --star --star-gzipped-read-file $i $3 ${outdir}/${output} ${B_arg}"
+		COMMAND="rsem-calculate-expression -p 8 --star --star-gzipped-read-file $i $3 ${outdir}/${output} ${B_arg}${A_arg}"
 		Launch
 		# Append SampleSheet
 		echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv       
@@ -167,7 +182,7 @@ elif [ $1 == "PE" ]; then
 		output=`echo $i | sed -e "s@$2\/@@g" | sed -e 's/_R1//g' | sed -e 's/\.fastq\.gz\|\.fq\.gz//g'`
 		# Define JOBNAME and COMMAND and launch job
 		JOBNAME="RSEM_${1}_${output}"
-		COMMAND="rsem-calculate-expression -p 8 --paired-end --star --star-gzipped-read-file $R1 $R2 $3 ${outdir}/${output} ${B_arg}"
+		COMMAND="rsem-calculate-expression -p 8 --paired-end --star --star-gzipped-read-file $R1 $R2 $3 ${outdir}/${output} ${B_arg}${A_arg}"
 		Launch
 		# Append SampleSheet
 		echo "${output}.genes.results,,," >> ./RSEM/SampleSheet_Bulk_RNA.csv
