@@ -54,7 +54,7 @@ fastqc                      0.11.9
 multiqc                     1.13
 trimmomatic                 0.39
 rsem                        1.3.2
-star                        2.7.5a
+star                        2.7.10b
 subread                     2.0.1
 ```
 
