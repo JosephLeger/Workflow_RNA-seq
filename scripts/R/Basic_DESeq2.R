@@ -118,16 +118,19 @@ mapped <- mapIds(org.Mm.eg.db,
                  keys = ID,
                  keytype = 'ENSEMBL', 
                  column = 'SYMBOL')
-Symbol <- c()
-for(j in 1:length(ID)){
-  if(!is.na(mapped[j])){
-    Symbol <- c(Symbol, mapped[j])
+mapped <- data.frame(ID = names(mapped), Symbol = mapped)
+
+# Define function to fill in faster than iteration
+fill_if_NA <- function(line){
+  if(is.na(line[2])){
+    return(line[1])
   }else{
-    Symbol <- c(Symbol, ID[j])
+    return(line[2])
   }
 }
-Table <- cbind(Symbol = Symbol, Table)
-Table <- Table[order(rownames(Table)),]
+Symbol <-  apply(mapped, 1, fill_if_NA)
+Table  <- cbind(Symbol = Symbol, Table)
+Table  <- Table[order(rownames(Table)),]
 
 # Save Table
 write.table(Table, paste0(PATH, '/Table/Table_Raw.txt'), 
