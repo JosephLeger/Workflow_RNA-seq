@@ -58,7 +58,7 @@ star                        2.7.10b
 subread                     2.0.1
 ```
 
-### Project diretcory
+### Project directory
 To start the workflow, create a new directory for the project and put previously downloaded scripts inside. Create a 'Raw' subdirectory and put all the raw FASTQ files inside.  
 Raw FASTQ files must be compressed in '.fq.gz' or '.fastq.gz' format. If it is not the case, you need to compress them using `gzip Raw/*.fastq`.  
 
