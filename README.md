@@ -9,7 +9,7 @@ Two quantification methods are available in this workflow :
 * **RSEM Estimation :** This method generates a table with decimal numbers corresponding to transcript expression estimation, obtained by normalizing the mapped reads according to transcript sizes. Expression estimation is then carried out by **RSEM**.
 
 <p align="center">
-<img src="https://github.com/JosephLeger/Bulk_RNA-seq/blob/main/img/pipeline.png"  width="90%" height="90%">
+<img src="https://github.com/JosephLeger/Workflow_RNA-seq/blob/main/img/pipeline.png"  width="90%" height="90%">
 </p>
 
 ### Common steps
@@ -65,7 +65,7 @@ Raw FASTQ files must be compressed in '.fq.gz' or '.fastq.gz' format. If it is n
 For the following example, this type of folder tree is used :
 
 <p align="left">
-<img src="https://github.com/JosephLeger/Bulk_RNA-seq/blob/main/img/paths.png"  width="50%" height="50%">
+<img src="https://github.com/JosephLeger/Workflow_RNA-seq/blob/main/img/paths.png"  width="50%" height="50%">
 </p>
 
 # Workflow Step by Step
