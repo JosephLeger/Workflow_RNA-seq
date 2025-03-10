@@ -155,6 +155,17 @@ sh QC.sh RSEM
 ```
 Pooled results are available in ./QC/MultiQC/RSEM_MultiQC.html file.  
 
+# Workflow in a Nutshell
+```
+sh QC.sh Raw
+sh Trim.sh -S 4:15 -L 3 -T 3 -M 36 -I ../Ref/Trimmomatic/NexteraPE-PE.fa:2:30:10 PE Raw
+sh QC.sh Trimmed/Trimmomatic/Paired
+
+sh STAR.sh PE Trimmed/Trimmomatic/Paired ../Ref/refdata-STAR-mm39.108/GenomeDir
+sh Count.sh PE STAR ../Ref/Genome/Mus_musculus.GRCm39.108.gtf
+
+sh RSEM.sh -B false PE Trimmed/Trimmomatic/Paired ../Ref/refdata-RSEM-mm39.108/mm39.108
+```
 
 
 
