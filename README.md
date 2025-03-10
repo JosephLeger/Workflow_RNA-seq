@@ -69,8 +69,8 @@ For the following example, this type of folder tree is used :
 </p>
 
 # Workflow Step by Step
-# Common Steps
-## 0. Preparation of references
+## Common Steps
+### 0. Preparation of references
 This step only needs to be carried out during the first alignment. The genome or transcriptome once indexed can be reused as a reference for subsequent alignments.  
 First, you need to download reference genome FASTA file and annotaion GTF file in the Genome folder.  
 ```bash
@@ -80,13 +80,13 @@ wget https://ftp.ensembl.org/pub/release-108/gtf/mus_musculus/Mus_musculus.GRCm3
 ```
 Then, create a directory for the reference and use provided scripts in refindex folder of this repository according to the workflow you aim to perform.  
 
-### STAR indexing
+#### STAR indexing
 Syntax : ```sh STAR_refindex.sh <FASTA> <GTF>```  
 ```bash
 sh STAR_refindex.sh ../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ../Genome/Mus_musculus.GRCm39.108.gtf.gz
 ```
 
-### RSEM indexing
+#### RSEM indexing
 Syntax : ```sh RSEM_refindex.sh <FASTA> <GTF> <build_name>```  
 ```bash
 sh RSEM_refindex.sh ../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ../Genome/Mus_musculus.GRCm39.109.gtf.gz mm39.108
@@ -94,14 +94,14 @@ sh RSEM_refindex.sh ../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz 
 *Once indexing is done, every following steps are performed directly in the project directory.*  
 
 
-## 1. Quality Check
+### 1. Quality Check
 Syntax : ```sh QC.sh <input_dir>```  
 ```bash
 sh QC.sh Raw
 ```
 Pooled results are available in ./QC/MultiQC/QC_Raw_MultiQC.html file.  
 
-## 2. Trimming
+### 2. Trimming
 If low quality bases or adapter enrichment is detected, you will need to perform trimming step.  
 Provided trimming script allow several options :
 * **-S** (Slingdingwindow) : Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold.  
@@ -122,33 +122,33 @@ Perform a quality check after trimming to ensure all adapters and low quality ba
 sh QC.sh Trimmed/Trimmomatic/Paired
 ```  
   
-# STAR Raw Counts
-## 3. Alignment to genome
+## STAR Raw Counts
+### 3. Alignment to genome
 Syntax : ```sh STAR.sh <SE|PE> <input_dir> <refindex>```
 ```bash
 sh STAR.sh PE Trimmed/Trimmomatic/Paired ../Ref/refdata-STAR-mm39.108/GenomeDir
 ```
-## 4. Quality Check
+### 4. Quality Check
 Syntax : ```sh QC.sh <input_dir>```  
 ```bash
 sh QC.sh STAR
 ```
 Pooled results are available in ./QC/MultiQC/STAR_MultiQC.html file.  
-## 5. Quantification
+### 5. Quantification
 Syntax : ```sh Count.sh <SE|PE> <input_dir> <GTF>```
 ```bash
 sh Count.sh PE STAR ../Ref/Genome/Mus_musculus.GRCm39.108.gtf
 ```
 
-# RSEM Estimation
-## 3. Transcripts Estimation
+## RSEM Estimation
+### 3. Transcripts Estimation
 Because RSEM will generate specific files after the estimation of the expression, it is possible to ignore output BAM files generation using **-B false** option. This could be usefull to avoid saturation of disk storage space.  
   
 Syntax : ```sh RSEM.sh [options] <SE|PE> <input_dir> <refindex>```   
 ```bash
 sh RSEM.sh -B false PE Trimmed/Trimmomatic/Paired ../Ref/refdata-RSEM-mm39.108/mm39.108
 ```  
-## 4. Quality Check
+### 4. Quality Check
 Syntax : ```sh QC.sh <input_dir>```  
 ```bash
 sh QC.sh RSEM
