@@ -67,6 +67,25 @@ For the following example, this type of folder tree is used :
 <img src="https://github.com/JosephLeger/Workflow_RNA-seq/blob/main/img/paths.png"  width="50%" height="50%">
 </p>
 
+# Workflow in a Nutshell  
+```bash
+# Quality Check
+sh 1_QC.sh Raw
+# Trimming
+sh 2_Trim.sh -S 4:15 -L 5 -T 5 -M 36 -I ../Ref/Trimmomatic/NexteraPE-PE.fa:2:30:10 PE Raw
+# Quality Check
+sh 1_QC.sh Trimmed/Trimmomatic/Paired
+
+# Using STAR
+sh 3_STAR.sh PE Trimmed/Trimmomatic/Paired ../Ref/refdata-STAR-mm39.108/GenomeDir
+sh 1_QC.sh STAR
+sh 4_Count.sh PE STAR ../Ref/Genome/Mus_musculus.GRCm39.108.gtf
+
+# Using RSEM
+sh 3_RSEM.sh -B true PE Trimmed/Trimmomatic/Paired ../Ref/refdata-RSEM-mm39.108/mm39.108
+sh 1_QC.sh RSEM
+```
+
 # Workflow Step by Step
 ## Common Steps
 ### 0. Preparation of references
@@ -151,32 +170,7 @@ sh 3_RSEM.sh -B true PE Trimmed/Trimmomatic/Paired ../Ref/refdata-RSEM-mm39.108/
 Perform a quality check after alignment to ensure reads were correctly mapped.  
 ```bash
 sh 1_QC.sh RSEM
-```  
-  
-# Workflow in a Nutshell
-  
-```bash
-# Quality Check
-sh 1_QC.sh Raw
-# Trimming
-sh 2_Trim.sh -S 4:15 -L 5 -T 5 -M 36 -I ../Ref/Trimmomatic/NexteraPE-PE.fa:2:30:10 PE Raw
-# Quality Check
-sh 1_QC.sh Trimmed/Trimmomatic/Paired
-
-# Using STAR
-sh 3_STAR.sh PE Trimmed/Trimmomatic/Paired ../Ref/refdata-STAR-mm39.108/GenomeDir
-sh 1_QC.sh STAR
-sh 4_Count.sh PE STAR ../Ref/Genome/Mus_musculus.GRCm39.108.gtf
-
-# Using RSEM
-sh 3_RSEM.sh -B true PE Trimmed/Trimmomatic/Paired ../Ref/refdata-RSEM-mm39.108/mm39.108
-sh 1_QC.sh RSEM
 ```
-
-
-
-
-
 
 
 
