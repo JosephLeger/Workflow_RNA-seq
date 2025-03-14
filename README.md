@@ -21,16 +21,14 @@ Two quantification methods are available in this workflow :
 A quality control is carried out on the FASTQ files resulting from trimming to ensure that the quality obtained is satisfactory.
 
 ### STAR Raw Counts Workflow 
-3. **Alignment to the genome :** Clean FASTQ files are then mapped to the previously indexed reference genome in order to identify the regions from which the reads come. **STAR** thus generates BAM files containing the reads aligned to the genome.
+3. **Alignment to the genome :** Clean FASTQ files are then mapped to the previously indexed reference genome in order to identify the regions from which the reads come. **STAR** thus generates BAM files containing the reads aligned to the genome.  
+A quality control is carried out on the FASTQ files resulting from trimming to ensure that the quality obtained is satisfactory.
 
-4. **Alignment Quality Check :** In order to analyze the proportion of correctly aligned reads, **MultiQC** can be directly used to pool the quality control of the BAM files resulting from the alignment.
-
-5. **Quantification :** This step uses **featureCounts** to convert the BAM files containing the aligned reads into a count table usable for further analyzes in R or Python.
+4. **Quantification :** This step uses **featureCounts** to convert the BAM files containing the aligned reads into a count table usable for further analyzes.  
 
 ### RSEM Estimation Workflow 
-3. **Transcripts estimation :** Clean FASTQ files are then mapped to the previously indexed reference genome in order to identify the regions from which the reads come. **STAR** and **RSEM** are used to make an estimate of the abundance of each transcript. Resulting .genes.results and .isoforms.results files contain respectively the results of the estimation of expression by genes or by transcripts which will be used for further analyzes in R or Python.
-
-4. **Alignment Quality Check :** In order to analyze the proportion of correctly aligned reads, **MultiQC** can be directly used to pool the quality control of the BAM files resulting from the alignment.
+3. **Transcripts estimation :** Clean FASTQ files are then mapped to the previously indexed reference genome in order to identify the regions from which the reads come. **STAR** and **RSEM** are used to make an estimate of the abundance of each transcript. Resulting .genes.results and .isoforms.results files contain respectively the results of the estimation of expression by genes or by transcripts which will be used for further analyzes.  
+A quality control is carried out on the FASTQ files resulting from trimming to ensure that the quality obtained is satisfactory.
 
 ### Post-Processing Data Analysis
 Following data analyzes are performed locally using R or Python. A complete script for basic DESeq2 analysis while performing STAR Raw Counts Workflow is provided in R script folder.  
@@ -129,13 +127,9 @@ Syntax : ```sh STAR.sh <SE|PE> <input_dir> <refindex>```
 ```bash
 sh STAR.sh PE Trimmed/Trimmomatic/Paired ../Ref/refdata-STAR-mm39.108/GenomeDir
 ```
-### 4. Quality Check
-Syntax : ```sh QC.sh <input_dir>```  
-```bash
-sh QC.sh STAR
-```
-Pooled results are available in ./QC/MultiQC/STAR_MultiQC.html file.  
-### 5. Quantification
+*Note : after mapping, launch QC step again to look at proportion of correctly mapped reads.*
+
+### 4. Quantification
 Syntax : ```sh Count.sh <SE|PE> <input_dir> <GTF>```
 ```bash
 sh Count.sh PE STAR ../Ref/Genome/Mus_musculus.GRCm39.108.gtf
@@ -148,13 +142,8 @@ Because RSEM will generate specific files after the estimation of the expression
 Syntax : ```sh RSEM.sh [options] <SE|PE> <input_dir> <refindex>```   
 ```bash
 sh RSEM.sh -B false PE Trimmed/Trimmomatic/Paired ../Ref/refdata-RSEM-mm39.108/mm39.108
-```  
-### 4. Quality Check
-Syntax : ```sh QC.sh <input_dir>```  
-```bash
-sh QC.sh RSEM
 ```
-Pooled results are available in ./QC/MultiQC/RSEM_MultiQC.html file.  
+*Note : after mapping, if BAM files have been generated, launch QC step again to look at proportion of correctly mapped reads.*  
   
 # Workflow in a Nutshell
   
