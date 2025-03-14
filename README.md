@@ -22,13 +22,13 @@ A quality control is carried out on the FASTQ files resulting from trimming to e
 
 ### STAR Raw Counts Workflow 
 3. **Alignment to the genome :** Clean FASTQ files are then mapped to the previously indexed reference genome in order to identify the regions from which the reads come. **STAR** thus generates BAM files containing the reads aligned to the genome.  
-A quality control is carried out on the BAM files resulting from alignment to ensure reads have been correctly mapped.
+A quality control is carried out on the BAM files resulting from alignment to ensure reads were correctly mapped.
 
 4. **Quantification :** This step uses **subread** featureCounts function to convert the BAM files containing the aligned reads into a count table usable for further analyzes.  
 
 ### RSEM Estimation Workflow 
 3. **Transcripts estimation :** Clean FASTQ files are then mapped to the previously indexed reference genome in order to identify the regions from which the reads come. **STAR** and **RSEM** are used to make an estimate of the abundance of each transcript. Resulting .genes.results and .isoforms.results files contain respectively the results of the estimation of expression by genes or by transcripts which will be used for further analyzes.  
-A quality control is carried out on the BAM files resulting from alignment to ensure reads have been correctly mapped.
+A quality control is carried out on the BAM files resulting from alignment to ensure reads were correctly mapped.
 
 ### Post-Processing Data Analysis
 Following data analyzes are performed locally using R or Python. A complete script for basic DESeq2 analysis while performing STAR Raw Counts Workflow is provided in R script folder.  
@@ -96,7 +96,7 @@ sh RSEM_refindex.sh ../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz 
 ### 1. Quality Check
 Syntax : ```sh QC.sh <input_dir>```  
 ```bash
-sh QC.sh Raw
+sh 1_QC.sh Raw
 ```
 Pooled results are available in ./QC/MultiQC/QC_Raw_MultiQC.html file.  
 
@@ -113,26 +113,30 @@ Provided trimming script allow several options :
   
 Syntax : ```sh Trim.sh [options] <SE|PE> <input_dir>```  
 ```bash
-sh Trim.sh -S 4:15 -L 3 -T 3 -M 36 -I ../Ref/Trimmomatic/NexteraPE-PE.fa:2:30:10 PE Raw
+sh 2_Trim.sh -S 4:15 -L 3 -T 3 -M 36 -I ../Ref/Trimmomatic/NexteraPE-PE.fa:2:30:10 PE Raw
 ```
 
 Perform a quality check after trimming to ensure all adapters and low quality bases have been removed correctly.  
 ```bash
-sh QC.sh Trimmed/Trimmomatic/Paired
+sh 1_QC.sh Trimmed/Trimmomatic/Paired
 ```  
   
 ## STAR Raw Counts
 ### 3. Alignment to genome
 Syntax : ```sh STAR.sh <SE|PE> <input_dir> <refindex>```
 ```bash
-sh STAR.sh PE Trimmed/Trimmomatic/Paired ../Ref/refdata-STAR-mm39.108/GenomeDir
+sh 3_STAR.sh PE Trimmed/Trimmomatic/Paired ../Ref/refdata-STAR-mm39.108/GenomeDir
 ```
-*Note : after mapping, launch QC step again to look at proportion of correctly mapped reads.*
+
+Perform a quality check after alignment to ensure reads were correctly mapped.  
+```bash
+sh 1_QC.sh STAR
+```  
 
 ### 4. Quantification
 Syntax : ```sh Count.sh <SE|PE> <input_dir> <GTF>```
 ```bash
-sh Count.sh PE STAR ../Ref/Genome/Mus_musculus.GRCm39.108.gtf
+sh 4_Count.sh PE STAR ../Ref/Genome/Mus_musculus.GRCm39.108.gtf
 ```
 
 ## RSEM Estimation
@@ -141,28 +145,32 @@ Because RSEM will generate specific files after the estimation of the expression
   
 Syntax : ```sh RSEM.sh [options] <SE|PE> <input_dir> <refindex>```   
 ```bash
-sh RSEM.sh -B false PE Trimmed/Trimmomatic/Paired ../Ref/refdata-RSEM-mm39.108/mm39.108
+sh 3_RSEM.sh -B true PE Trimmed/Trimmomatic/Paired ../Ref/refdata-RSEM-mm39.108/mm39.108
 ```
-*Note : after mapping, if BAM files have been generated, launch QC step again to look at proportion of correctly mapped reads.*  
+
+Perform a quality check after alignment to ensure reads were correctly mapped.  
+```bash
+sh 1_QC.sh RSEM
+```  
   
 # Workflow in a Nutshell
   
 ```bash
 # Quality Check
-sh QC.sh Raw
+sh 1_QC.sh Raw
 # Trimming
-sh Trim.sh -S 4:15 -L 5 -T 5 -M 36 -I ../Ref/Trimmomatic/NexteraPE-PE.fa:2:30:10 PE Raw
+sh 2_Trim.sh -S 4:15 -L 5 -T 5 -M 36 -I ../Ref/Trimmomatic/NexteraPE-PE.fa:2:30:10 PE Raw
 # Quality Check
-sh QC.sh Trimmed/Trimmomatic/Paired
+sh 1_QC.sh Trimmed/Trimmomatic/Paired
 
 # Using STAR
-sh STAR.sh PE Trimmed/Trimmomatic/Paired ../Ref/refdata-STAR-mm39.108/GenomeDir
-sh QC.sh STAR
-sh Count.sh PE STAR ../Ref/Genome/Mus_musculus.GRCm39.108.gtf
+sh 3_STAR.sh PE Trimmed/Trimmomatic/Paired ../Ref/refdata-STAR-mm39.108/GenomeDir
+sh 1_QC.sh STAR
+sh 4_Count.sh PE STAR ../Ref/Genome/Mus_musculus.GRCm39.108.gtf
 
 # Using RSEM
-sh RSEM.sh -B true PE Trimmed/Trimmomatic/Paired ../Ref/refdata-RSEM-mm39.108/mm39.108
-sh QC.sh RSEM
+sh 3_RSEM.sh -B true PE Trimmed/Trimmomatic/Paired ../Ref/refdata-RSEM-mm39.108/mm39.108
+sh 1_QC.sh RSEM
 ```
 
 
