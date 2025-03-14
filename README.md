@@ -14,7 +14,6 @@ Two quantification methods are available in this workflow :
 
 ### Common steps
 0. **Preparation of references :** To perform mapping to reference genome/transcriptome, it must be indexed first. To do so, it requires reference genome (FASTA file) and genome annotation (GTF file) available for download in Ensembl.org gateway.  
-*Note : For a quantification with **featureCount** genome indexing must be preformed with **STAR**, whereas for transcript expression estimation it must be performed with **RSEM**.*
 
 1. **Quality Check :** Quality of each FASTQ file is assessed using **FastQC**. A quality control report per file is then obtained, providing information on the quality of the bases, the length of the reads, the presence of adapters, etc. To make the visualization of the results easier, all reports are then pooled and analyzed simultaneously using **MultiQC**. 
 
@@ -35,6 +34,8 @@ A quality control is carried out on the FASTQ files resulting from trimming to e
 
 ### Post-Processing Data Analysis
 Following data analyzes are performed locally using R or Python. A complete script for basic DESeq2 analysis while performing STAR Raw Counts Workflow is provided in R script folder.  
+
+*Supplementary scripts are also available in ./scripts/extra folder of this repository.*  
 
 # Initialization and recommendations
 
