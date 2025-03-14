@@ -1,0 +1,10 @@
+File_ID,Info,Condition
+SRR00000001,LTpos_2D_rep1,Condition_2D
+SRR00000002,LTpos_2D_rep2,Condition_2D
+SRR00000003,LTpos_2D_rep3,Condition_2D
+SRR00000004,LTpos_10D_rep1,Condition_10D
+SRR00000005,LTpos_10D_rep2,Condition_10D
+SRR00000006,LTpos_10D_rep3,Condition_10D
+SRR00000007,LTneg_2D_rep1,Condition_neg
+SRR00000008,LTneg_2D_rep2,Condition_neg
+SRR00000009,LTneg_2D_rep3,Condition_neg
