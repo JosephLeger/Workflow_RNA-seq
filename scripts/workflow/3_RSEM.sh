@@ -132,7 +132,7 @@ fi
 
 ## SETUP - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 module load rsem/1.3.2
-module load star/2.7.5a
+module load star/2.7.10b
 module load samtools/1.15.1
 
 # Generate REPORT
