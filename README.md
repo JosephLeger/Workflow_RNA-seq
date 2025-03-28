@@ -38,13 +38,14 @@ Following data analyzes are performed locally using R or Python. A complete scri
 # Initialization and recommendations
 
 ### Scripts
-All required scripts are available in the [script folder](https://github.com/JosephLeger/Workflow_RNA-seq/tree/main/scripts) in this directory.   
+All required scripts are available in the [script folder](https://github.com/JosephLeger/Workflow_RNA-seq/tree/main/scripts) of this repository.   
 To get more information about using these scripts, enter the command `sh <script_name.sh> help`.  
 
 ### Environments  
 The workflow is encoded in Shell language and is supposed to be launched under a Linux environment.  
-Moreover, it was written to be used on a computing cluster using **Sun Grid Engine (SGE)** with tools already pre-installed in the form of modules. Modules are so loaded using `module load <tool_name>` command. If you use manually installed environments, simply replace module loading in script section by the environment activation command.  
-All script files launch tasks as **qsub** task submission. To successfully complete the workflow, wait for all the jobs in a step to be completed before launching the next one. 
+Moreover, it was written to be used on a computing cluster using **Simple Linux Utility for Resource Management (SLURM)** Workload Manager.  
+All script files launch tasks as **sbatch** task submission. To successfully complete the workflow, wait for all the jobs in a step to be completed before launching the next one.  
+You have to install all required tools in a conda environment using provided provided [Workflow_RNA-seq.yaml](https://github.com/JosephLeger/Workflow_RNA-seq/blob/main/Workflow_RNA-seq.yaml) reciept file.  
 
 ### Requirments
 ```
@@ -52,6 +53,7 @@ Name                        Version
 fastqc                      0.11.9
 multiqc                     1.13
 trimmomatic                 0.39
+samtools                    1.6
 rsem                        1.3.2
 star                        2.7.10b
 subread                     2.0.1
