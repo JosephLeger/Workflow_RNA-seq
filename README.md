@@ -58,7 +58,9 @@ rsem                        1.3.2
 star                        2.7.10b
 subread                     2.0.1
 
-# Install all required tools using :
+```
+Install all required tools using :
+```bash
 conda env create -f Workflow_RNA-seq.yaml
 ```
 
