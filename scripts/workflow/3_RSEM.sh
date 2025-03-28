@@ -74,7 +74,7 @@ done
 # Checking if provided option values are correct
 case $B_arg in
 	True|true|TRUE|T|t) 
-	        B_arg='--star-output-genome-bam ';;
+	    B_arg='--star-output-genome-bam ';;
 	False|false|FALSE|F|f) 
 		B_arg='--no-bam-output ';;
 	*)
@@ -131,28 +131,42 @@ fi
 ################################################################################################################
 
 ## SETUP - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-module load rsem/1.3.2
-module load star/2.7.10b
-module load samtools/1.15.1
-
 # Generate REPORT
 echo '#' >> ./0K_REPORT.txt
 date >> ./0K_REPORT.txt
 
 Launch()
 {
-# Launch COMMAND and save report
-echo -e "#$ -V \n#$ -cwd \n#$ -S /bin/bash \n""${COMMAND}" | qsub -N "${JOBNAME}" ${WAIT}
-echo -e "${JOBNAME}" >> ./0K_REPORT.txt
+# Launch COMMAND while getting JOBID
+JOBID=$(echo -e "#!/bin/bash \n\
+#SBATCH --job-name=${JOBNAME} \n\
+#SBATCH --output=%x_%j.out \n\
+#SBATCH --error=%x_%j.err \n\
+#SBATCH --time=${TIME} \n\
+#SBATCH --nodes=${NODE} \n\
+#SBATCH --ntasks=${TASK} \n\
+#SBATCH --cpus-per-task=${CPU} \n\
+#SBATCH --mem=${MEM} \n\
+#SBATCH --qos=${QOS} \n\
+source /home/${usr}/.bashrc \n\
+micromamba activate Workflow_RNA-seq \n""${COMMAND}" | sbatch --parsable --clusters nautilus --clusters nautilus ${WAIT})
+# Define JOBID and print launching message
+JOBID=`echo ${JOBID} | sed -e "s@;.*@@g"` 
+echo "Submitted batch job ${JOBID} on cluster nautilus"
+# Fill in 0K_REPORT file
+echo -e "${JOBNAME}_${JOBID}" >> ./0K_REPORT.txt
 echo -e "${COMMAND}" | sed 's@^@   \| @' >> ./0K_REPORT.txt
 }
+# Define default waiting list for sbatch as empty
 WAIT=''
 
 ## RSEM - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Set up parameters for SLURM ressources
+TIME='0-01:00:00'; NODE='1'; TASK='1'; CPU='8'; MEM='32g'; QOS='quick'
+
 # Create RSEM directory for outputs
 outdir='./RSEM'
 mkdir -p ${outdir}
-
 # Initialize SampleSheet
 echo "FileName,SampleName,CellType,Batch" > ${outdir}/SampleSheet_Bulk_RNA.csv
 
