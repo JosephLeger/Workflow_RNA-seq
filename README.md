@@ -38,7 +38,7 @@ Following data analyzes are performed locally using R or Python. A complete scri
 # Initialization and recommendations
 
 ### Scripts
-All required scripts are available in the script folder in this directory.   
+All required scripts are available in the [script folder](https://github.com/JosephLeger/Workflow_RNA-seq/tree/main/scripts) in this directory.   
 To get more information about using these scripts, enter the command `sh <script_name.sh> help`.  
 
 ### Environments  
