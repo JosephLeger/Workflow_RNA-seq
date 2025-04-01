@@ -105,7 +105,7 @@ wget https://ftp.ensembl.org/pub/release-108/gtf/mus_musculus/Mus_musculus.GRCm3
 
 # Unzip downloaded files
 gunzip Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz
-Mus_musculus.GRCm39.108.gtf.gz
+gunzip Mus_musculus.GRCm39.108.gtf.gz
 ```
 Then, create a directory for the reference and use provided scripts in refindex folder of this repository according to the workflow you aim to perform.  
 
