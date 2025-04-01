@@ -76,7 +76,7 @@ JOBID=$(echo -e "#!/bin/bash \n\
 #SBATCH --mem=${MEM} \n\
 #SBATCH --qos=${QOS} \n\
 source /home/${usr}/.bashrc \n\
-micromamba activate Workflow_RNA-seq \n""${COMMAND}" | sbatch --parsable --clusters nautilus --clusters nautilus ${WAIT})
+micromamba activate Workflow_RNA-seq \n""${COMMAND}" | sbatch --parsable --clusters nautilus ${WAIT})
 # Define JOBID and print launching message
 JOBID=`echo ${JOBID} | sed -e "s@;.*@@g"` 
 echo "Submitted batch job ${JOBID} on cluster nautilus"
