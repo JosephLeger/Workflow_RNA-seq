@@ -102,19 +102,23 @@ First, you need to download reference genome FASTA file and annotaion GTF file i
 # Example with mouse genome from Ensembl.org
 wget https://ftp.ensembl.org/pub/release-108/fasta/mus_musculus/dna/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz
 wget https://ftp.ensembl.org/pub/release-108/gtf/mus_musculus/Mus_musculus.GRCm39.108.gtf.gz
+
+# Unzip downloaded files
+gunzip Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz
+Mus_musculus.GRCm39.108.gtf.gz
 ```
 Then, create a directory for the reference and use provided scripts in refindex folder of this repository according to the workflow you aim to perform.  
 
 #### STAR indexing
 Syntax : ```sh STAR_refindex.sh <FASTA> <GTF>```  
 ```bash
-sh STAR_refindex.sh ../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ../Genome/Mus_musculus.GRCm39.108.gtf.gz
+sh STAR_refindex.sh ../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa ../Genome/Mus_musculus.GRCm39.108.gtf
 ```
 
 #### RSEM indexing
 Syntax : ```sh RSEM_refindex.sh <FASTA> <GTF> <build_name>```  
 ```bash
-sh RSEM_refindex.sh ../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa.gz ../Genome/Mus_musculus.GRCm39.109.gtf.gz mm39.108
+sh RSEM_refindex.sh ../Genome/Mus_musculus.GRCm39.dna_sm.primary_assembly.fa ../Genome/Mus_musculus.GRCm39.109.gtf mm39.108
 ```
 *Once indexing is done, every following steps are performed directly in the project directory.*  
 
