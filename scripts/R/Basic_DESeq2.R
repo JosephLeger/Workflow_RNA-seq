@@ -4,6 +4,7 @@
 #===============================================================================
 ## DESCRIPTION -----------------------------------------------------------------
 #===============================================================================
+# From : https://github.com/JosephLeger/Workflow_RNA-seq
 
 # This script porceeds to post-processing analysis of Bulk RNA-seq data after 
 # quantification with featureCount while using RAW COUNTS alignment workflow.
@@ -90,26 +91,6 @@ for(i in 1:length(METADATA$File)){
 }
 colnames(Table) <- METADATA$Sample
 rownames(Table) <- COUNT$Geneid
-
-
-# ---------------------------------------------------------------------------- #
-# Changing Ensembl id to GeneSymbol manually
-#Using : https://www.biotools.fr/mouse/ensembl_symbol_converter
-#write.table(rownames(Table), paste0(PATH, '/Saves/manual_gene_index.txt'), 
-#            sep = '\t', quote = FALSE, row.names = FALSE, col.names = FALSE)
-#index <- read.table(paste0(PATH, '/Saves/manual_gene_index.txt'), sep = '\t')
-#
-#gene_id     <- c()
-#for(i in 1:nrow(index)){
-#  if(index[i, 2] == ""){
-#    gene_id <- c(gene_id, index[i, 1])
-#  } else {
-#    gene_id <- c(gene_id, index[i, 2])
-#  }
-#}
-# Add gene symbol
-#Table       <- cbind(Symbol = gene_id, Table)
-# ---------------------------------------------------------------------------- #
 
 
 # Changing Ensembl id to GeneSymbol using org.Mm.eg.db / org.Hs.eg.db
