@@ -11,9 +11,11 @@
 
 ## CUSTOMIZATION ##
 # All you have to do is replacing information in PROJECT INFO section, with your
-# own folder pathways.
-# In DESEQ2 DEG ANALYSIS section, you can modify filter conditions too based on
-# your own data distribution, or even apply customized filtering functions.
+# own folder pathways. 
+# If the studied organisms is not Mus musculus or Homo sapiens, you will also
+# need to proceed GeneSymbol annotation manually.
+# In DESEQ2 DEG ANALYSIS section, you can modify filter conditions based on your
+# own data distribution, or even apply customized filtering functions.
 
 
 
@@ -91,7 +93,6 @@ for(i in 1:length(METADATA$File)){
 }
 colnames(Table) <- METADATA$Sample
 rownames(Table) <- COUNT$Geneid
-
 
 # Changing Ensembl id to GeneSymbol using org.Mm.eg.db / org.Hs.eg.db
 ID     <- rownames(Table)
