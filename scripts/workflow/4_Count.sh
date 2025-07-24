@@ -101,7 +101,7 @@ WAIT=''
 
 ## FEATURE COUNT - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Set up parameters for SLURM ressources
-TIME='0-00:10:00'; NODE='1'; TASK='1'; CPU='1'; MEM='2g'; QOS='quick'
+TIME='0-01:00:00'; NODE='1'; TASK='1'; CPU='1'; MEM='2g'; QOS='quick'
 
 # Create output directory
 outdir='Counts'
