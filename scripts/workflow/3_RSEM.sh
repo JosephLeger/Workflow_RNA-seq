@@ -34,15 +34,15 @@ ${BOLD}OPTIONS${END}\n\
  
 ${BOLD}ARGUMENTS${END}\n\
 	${BOLD}<SE|PE>${END}\n\
-        	Define whether FASTQ files are Single-End (SE) or Paired-End (PE).\n\
-        	If SE is provided, each file is aligned individually and give rise to an output file stored in './RSEM' directory.\n\
-        	If PE is provided, files are aligned in pair (R1 and R2), giving rise to a single output files from a pair of input files.\n\n\
+        Define whether FASTQ files are Single-End (SE) or Paired-End (PE).\n\
+        If SE is provided, each file is aligned individually and give rise to an output file stored in './RSEM' directory.\n\
+        If PE is provided, files are aligned in pair (R1 and R2), giving rise to a single output files from a pair of input files.\n\n\
 	${BOLD}<input_dir>${END}\n\
-        	Directory containing .fastq.gz or .fq.gz files to use as input for alignment.\n\
-        	It usually corresponds to 'Raw' or 'Trimmed/Trimmomatic'.\n\n\
+        Directory containing .fastq.gz or .fq.gz files to use as input for alignment.\n\
+        It usually corresponds to 'Raw' or 'Trimmed/Trimmomatic'.\n\n\
 	${BOLD}<refindex>${END}\n\
-        	Path to reference previously indexed using rsem-prepare-reference.\n\
-        	Provided path must be ended by reference name (prefix common to files).\n\n\
+        Path to reference previously indexed using rsem-prepare-reference.\n\
+        Provided path must be ended by reference name (prefix common to files).\n\n\
 
 ${BOLD}EXAMPLE USAGE${END}\n\
 	sh RSEM.sh ${BOLD}-B${END} true ${BOLD}-A${END} false ${BOLD}PE Trimmed/Trimmomatic/Paired ${usr}/Ref/refdata-RSEM-mm39.108/mm39.108${END}\n"
