@@ -30,10 +30,10 @@ ${BOLD}ARGUMENTS${END}\n\
 		If PE is provided, files are aligned in pair (R1 and R2), giving rise to a single output files from a pair of input files.\n\n\
 	${BOLD}<input_dir>${END}\n\
 		Directory containing .fastq.gz or .fq.gz files to use as input for alignment.\n\
-        	It usually corresponds to 'Raw' or 'Trimmed'.\n\n\
+        It usually corresponds to 'Raw' or 'Trimmed'.\n\n\
 	${BOLD}<refindex>${END}\n\
-        	Path to reference previously indexed using STAR genomeGenerate.\n\
-        	Provided path must be ended by generated GenomDir folder.\n\n\
+        Path to reference previously indexed using STAR genomeGenerate.\n\
+        Provided path must be ended by generated GenomDir folder.\n\n\
 	 
 ${BOLD}EXAMPLE USAGE${END}\n\
 	sh ${script_name} ${BOLD}PE Trimmed/Trimmomatic/Paired ${usr}/Ref/refdata-STAR-mm39.108/GenomeDir${END}\n"
